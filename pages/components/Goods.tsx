@@ -57,10 +57,9 @@ export const Goods = () => {
   return (
     <>
       {/* GoodsCard */}
-      <Flex w="full" p="6" gap="8" wrap="wrap">
+      <Flex w="full" p="6" gap="8" wrap="wrap" justifyContent="center">
         {data.map((item) => (
           <GoodsCard key={item.id} item={item} openModal={openModal} />
-
           // <Card
           //   key={item.id}
           //   minW="300"
