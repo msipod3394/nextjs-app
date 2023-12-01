@@ -41,9 +41,9 @@ const data: DataType = [
 ];
 
 /**
- * Popupコンポーネント
+ * Goodsコンポーネント
  */
-export const Popup = () => {
+export const Goods = () => {
   const { isOpen, onOpen, onClose, onToggle } = useDisclosure(); // useDisclosure：モーダルの開閉状態を管理
   const [selectedModal, setSelectedModal] = useState(null);
 
