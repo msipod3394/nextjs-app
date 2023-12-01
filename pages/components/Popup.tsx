@@ -1,28 +1,7 @@
-import {
-  Button,
-  Card,
-  CardHeader,
-  CardBody,
-  Heading,
-  Stack,
-  StackDivider,
-  Divider,
-  CardFooter,
-  ButtonGroup,
-  Box,
-  Text,
-  Flex,
-  Modal,
-  ModalBody,
-  ModalCloseButton,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-  ModalOverlay,
-  useDisclosure,
-} from "@chakra-ui/react";
-import Image from "next/image";
+import { Flex, useDisclosure } from "@chakra-ui/react";
 import React, { useState } from "react";
+import { GoodsCard } from "./GoodsCard";
+import { GoodsModal } from "./GoodsModal";
 
 /**
  * 商品データの定義
@@ -66,7 +45,6 @@ const data: DataType = [
  */
 export const Popup = () => {
   const { isOpen, onOpen, onClose, onToggle } = useDisclosure(); // useDisclosure：モーダルの開閉状態を管理
-  
   const [selectedModal, setSelectedModal] = useState(null);
 
   // モーダル展開
@@ -76,63 +54,70 @@ export const Popup = () => {
     onOpen();
   };
 
-  // レンダリング
   return (
     <>
-      {/* Card */}
+      {/* GoodsCard */}
       <Flex w="full" p="6" gap="8" wrap="wrap">
         {data.map((item) => (
-          <Card
-            key={item.id}
-            minW="300"
-            maxW="sm"
-            onClick={() => openModal(item.id)}
-          >
-            <CardBody>
-              <Flex direction="column" alignItems="center">
-                <Stack mt="2" spacing="3" align="center">
-                  <Image
-                    alt={item.title}
-                    src={item.image}
-                    width={100}
-                    height={100}
-                  />
-                  <Heading size="sm" mb="2">
-                    {item.title}
-                  </Heading>
-                </Stack>
-              </Flex>
-            </CardBody>
-            <CardFooter justifyContent="center">
-              <Button key={item.id} onClick={() => openModal(item.id)}>
-                詳しくみる
-              </Button>
-            </CardFooter>
-          </Card>
+          <GoodsCard key={item.id} item={item} openModal={openModal} />
+
+          // <Card
+          //   key={item.id}
+          //   minW="300"
+          //   maxW="sm"
+          //   onClick={() => openModal(item.id)}
+          // >
+          //   <CardBody>
+          //     <Flex direction="column" alignItems="center">
+          //       <Stack mt="2" spacing="3" align="center">
+          //         <Image
+          //           alt={item.title}
+          //           src={item.image}
+          //           width={100}
+          //           height={100}
+          //         />
+          //         <Heading size="sm" mb="2">
+          //           {item.title}
+          //         </Heading>
+          //       </Stack>
+          //     </Flex>
+          //   </CardBody>
+          //   <CardFooter justifyContent="center">
+          //     <Button key={item.id} onClick={() => openModal(item.id)}>
+          //       詳しくみる
+          //     </Button>
+          //   </CardFooter>
+          // </Card>
         ))}
       </Flex>
 
-      {/* Modal */}
+      {/* GoodsModal */}
       {selectedModal && (
-        <Modal isOpen={isOpen} onClose={onClose}>
-          <ModalOverlay>
-            <ModalContent p={4}>
-              <ModalHeader>{selectedModal.title}</ModalHeader>
-              <ModalCloseButton />
-              <ModalBody mb={10}>
-                <Flex direction="column" alignItems="center">
-                  <Image
-                    src={selectedModal.image}
-                    alt={selectedModal.title}
-                    width={200}
-                    height={200}
-                  />
-                  <p>{selectedModal.contents}</p>
-                </Flex>
-              </ModalBody>
-            </ModalContent>
-          </ModalOverlay>
-        </Modal>
+        <GoodsModal
+          isOpen={isOpen}
+          onClose={onClose}
+          selectedModal={selectedModal}
+        />
+
+        // <Modal isOpen={isOpen} onClose={onClose}>
+        //   <ModalOverlay>
+        //     <ModalContent p={4}>
+        //       <ModalHeader>{selectedModal.title}</ModalHeader>
+        //       <ModalCloseButton />
+        //       <ModalBody mb={10}>
+        //         <Flex direction="column" alignItems="center">
+        //           <Image
+        //             src={selectedModal.image}
+        //             alt={selectedModal.title}
+        //             width={200}
+        //             height={200}
+        //           />
+        //           <p>{selectedModal.contents}</p>
+        //         </Flex>
+        //       </ModalBody>
+        //     </ModalContent>
+        //   </ModalOverlay>
+        // </Modal>
       )}
     </>
   );
