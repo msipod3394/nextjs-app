@@ -22,12 +22,19 @@ import {
   useDisclosure,
 } from "@chakra-ui/react";
 import Image from "next/image";
-import React from "react";
+import React, { useState } from "react";
 
 /**
- * 商品データ
+ * 商品データの定義
  */
-const data = [
+type DataType = {
+  id: string;
+  title: string;
+  contents: string;
+  image: string;
+}[];
+
+const data: DataType = [
   {
     id: "1",
     title: "色付リップクリーム",
@@ -55,32 +62,41 @@ const data = [
 ];
 
 /**
- * Popup
+ * Popupコンポーネント
  */
 export const Popup = () => {
-  const { isOpen, onOpen, onClose } = useDisclosure();
-  const [selectedModal, setSelectedModal] = React.useState(null);
+  const { isOpen, onOpen, onClose, onToggle } = useDisclosure(); // useDisclosure：モーダルの開閉状態を管理
+  
+  const [selectedModal, setSelectedModal] = useState(null);
 
+  // モーダル展開
+  // idと一致するものをdataから見つけ、onOpenを実行
   const openModal = (modalId) => {
     setSelectedModal(data.find((item) => item.id === modalId));
     onOpen();
   };
 
+  // レンダリング
   return (
     <>
       {/* Card */}
       <Flex w="full" p="6" gap="8" wrap="wrap">
         {data.map((item) => (
           <Card
+            key={item.id}
             minW="300"
             maxW="sm"
-            key={item.id}
             onClick={() => openModal(item.id)}
           >
             <CardBody>
               <Flex direction="column" alignItems="center">
                 <Stack mt="2" spacing="3" align="center">
-                  <Image src={item.image} width={100} height={100} />
+                  <Image
+                    alt={item.title}
+                    src={item.image}
+                    width={100}
+                    height={100}
+                  />
                   <Heading size="sm" mb="2">
                     {item.title}
                   </Heading>
