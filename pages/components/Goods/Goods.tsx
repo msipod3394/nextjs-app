@@ -1,44 +1,26 @@
 import { Flex, useDisclosure } from "@chakra-ui/react";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { GoodsCard } from "./GoodsCard";
 import { GoodsModal } from "./GoodsModal";
 
 /**
  * 商品データの定義
  */
-export type DataType = {
+// 取得したJSONデータの型定義
+export type BookData = {
   id: string;
-  title: string;
-  contents: string;
-  image: string;
+  volumeInfo: {
+    title: string;
+    publishedDate: string;
+    description: string;
+    imageLinks: {
+      thumbnail: string;
+    };
+  };
+  saleInfo: {
+    buyLink: string;
+  };
 };
-
-const data: DataType[] = [
-  {
-    id: "1",
-    title: "色付リップクリーム",
-    contents: "ハート型の2層リップスティック、ストロベリーの香り付き！",
-    image: "/goods/goods_1.jpg",
-  },
-  {
-    id: "2",
-    title: "劇場版SPY×FAMILY 300ピースジグソーパズル",
-    contents: "『劇場版 SPY×FAMILY CODE: White』よりジグソーパズルが新登場！",
-    image: "/goods/goods_2.jpg",
-  },
-  {
-    id: "3",
-    title: "アクリルスタンド＆缶バッジセット",
-    contents: "大好評デフォルメイラストシリーズから新商品登場！",
-    image: "/goods/goods_3.jpg",
-  },
-  {
-    id: "4",
-    title: "SPY×FAMILY キービジュアルトートバッグ",
-    contents: "キービジュアルのアーニャのイラストを使用したトートバッグ！",
-    image: "/goods/goods_4.jpg",
-  },
-];
 
 /**
  * Goodsコンポーネント
@@ -50,43 +32,38 @@ export const Goods = () => {
   // モーダル展開
   // idと一致するものをdataから見つけ、onOpenを実行
   const openModal = (modalId) => {
-    setSelectedModal(data.find((item) => item.id === modalId));
+    setSelectedModal(books.find((item) => item.id === modalId));
     onOpen();
   };
+
+  // API
+  const [books, setBooks] = useState<BookData[]>([]);
+  const url = "https://www.googleapis.com/books/v1/volumes?q=SPY%C3%97FAMILY";
+
+  // データ通信
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch(url);
+        if (!response.ok) {
+          throw new Error("ネットワークエラーです");
+        }
+        const data = await response.json();
+        setBooks(data.items || []);
+      } catch (error) {
+        // エラー時
+        console.error(error);
+      }
+    };
+    fetchData();
+  }, []);
 
   return (
     <>
       {/* GoodsCard */}
       <Flex w="full" p="6" gap="8" wrap="wrap" justifyContent="center">
-        {data.map((item) => (
+        {books.map((item) => (
           <GoodsCard key={item.id} item={item} openModal={openModal} />
-          // <Card
-          //   key={item.id}
-          //   minW="300"
-          //   maxW="sm"
-          //   onClick={() => openModal(item.id)}
-          // >
-          //   <CardBody>
-          //     <Flex direction="column" alignItems="center">
-          //       <Stack mt="2" spacing="3" align="center">
-          //         <Image
-          //           alt={item.title}
-          //           src={item.image}
-          //           width={100}
-          //           height={100}
-          //         />
-          //         <Heading size="sm" mb="2">
-          //           {item.title}
-          //         </Heading>
-          //       </Stack>
-          //     </Flex>
-          //   </CardBody>
-          //   <CardFooter justifyContent="center">
-          //     <Button key={item.id} onClick={() => openModal(item.id)}>
-          //       詳しくみる
-          //     </Button>
-          //   </CardFooter>
-          // </Card>
         ))}
       </Flex>
 
@@ -97,26 +74,6 @@ export const Goods = () => {
           onClose={onClose}
           selectedModal={selectedModal}
         />
-
-        // <Modal isOpen={isOpen} onClose={onClose}>
-        //   <ModalOverlay>
-        //     <ModalContent p={4}>
-        //       <ModalHeader>{selectedModal.title}</ModalHeader>
-        //       <ModalCloseButton />
-        //       <ModalBody mb={10}>
-        //         <Flex direction="column" alignItems="center">
-        //           <Image
-        //             src={selectedModal.image}
-        //             alt={selectedModal.title}
-        //             width={200}
-        //             height={200}
-        //           />
-        //           <p>{selectedModal.contents}</p>
-        //         </Flex>
-        //       </ModalBody>
-        //     </ModalContent>
-        //   </ModalOverlay>
-        // </Modal>
       )}
     </>
   );

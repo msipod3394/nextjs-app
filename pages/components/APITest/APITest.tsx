@@ -38,9 +38,12 @@ export const APITest = () => {
     fetchData();
   }, []);
 
+  console.log(books);
+
   return (
     <div>
       <ul>
+        
         {books.map(({ id, volumeInfo, saleInfo }) => (
           <li key={id}>
             <p>{volumeInfo.title}</p>
