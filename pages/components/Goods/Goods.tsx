@@ -1,7 +1,18 @@
-import { Flex, useDisclosure } from "@chakra-ui/react";
+import {
+  useDisclosure,
+  Button,
+  Card,
+  CardBody,
+  Heading,
+  Stack,
+  CardFooter,
+  Flex,
+  Text,
+} from "@chakra-ui/react";
 import React, { useState, useEffect } from "react";
-import { GoodsCard } from "./GoodsCard";
-import { GoodsModal } from "./GoodsModal";
+import Image from "next/image";
+import Link from "next/link";
+import { useRouter } from "next/router";
 
 /**
  * 商品データの定義
@@ -26,6 +37,7 @@ export type BookData = {
  * Goodsコンポーネント
  */
 export const Goods = () => {
+  const router = useRouter(); // ルーターを初期化
   const { isOpen, onOpen, onClose, onToggle } = useDisclosure(); // useDisclosure：モーダルの開閉状態を管理
   const [selectedModal, setSelectedModal] = useState(null);
 
@@ -62,19 +74,32 @@ export const Goods = () => {
     <>
       {/* GoodsCard */}
       <Flex w="full" p="6" gap="8" wrap="wrap" justifyContent="center">
-        {books.map((item) => (
-          <GoodsCard key={item.id} item={item} openModal={openModal} />
+        {books.map(({ id, volumeInfo, saleInfo }) => (
+          <Card key={id} minW="300" maxW="sm" p="4">
+            <CardBody>
+              <Flex direction="column" alignItems="center">
+                <Stack mt="2" spacing="3" align="center">
+                  <Image
+                    alt={volumeInfo.title}
+                    src={volumeInfo.imageLinks.thumbnail}
+                    width={100}
+                    height={100}
+                  />
+                  <Heading size="sm">{volumeInfo.title}</Heading>
+                  <Text>発売日：{volumeInfo.publishedDate}</Text>
+                </Stack>
+              </Flex>
+            </CardBody>
+            <CardFooter justifyContent="center" p="4">
+              <Link key={id} href={`goods/detail?${id}`} passHref>
+                詳しくみる
+              </Link>
+            </CardFooter>
+          </Card>
+
+          // <GoodsCard key={item.id} item={item} openModal={openModal} />
         ))}
       </Flex>
-
-      {/* GoodsModal */}
-      {selectedModal && (
-        <GoodsModal
-          isOpen={isOpen}
-          onClose={onClose}
-          selectedModal={selectedModal}
-        />
-      )}
     </>
   );
 };
