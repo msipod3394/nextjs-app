@@ -8,8 +8,18 @@ import {
   Flex,
 } from "@chakra-ui/react";
 import Image from "next/image";
+import { FC } from "react";
+import { DataType } from "./Goods";
 
-export const GoodsCard = ({ item: { id, title, image }, openModal }) => {
+type Props = {
+  item: DataType;
+  openModal: (id: string) => void;
+};
+
+export const GoodsCard: FC<Props> = ({
+  item: { id, title, image },
+  openModal,
+}) => {
   return (
     <>
       <Card key={id} minW="300" maxW="sm" onClick={() => openModal(id)}>

@@ -6,14 +6,14 @@ import { GoodsModal } from "./GoodsModal";
 /**
  * 商品データの定義
  */
-type DataType = {
+export type DataType = {
   id: string;
   title: string;
   contents: string;
   image: string;
-}[];
+};
 
-const data: DataType = [
+const data: DataType[] = [
   {
     id: "1",
     title: "色付リップクリーム",
