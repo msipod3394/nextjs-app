@@ -11,16 +11,15 @@ import {
 import Image from "next/image";
 import { FC } from "react";
 import { BookData } from "./Goods";
-import React, { useEffect, useState } from "react";
 import Link from "next/link";
 
 type Props = {
   item: BookData;
-  openModal: (id: string) => void;
+  // openModal: (id: string) => void;
 };
 
 export const GoodsCard: FC<Props> = ({
-  item: { id, volumeInfo, saleInfo },
+  item: { id, volumeInfo },
   // openModal,
 }) => {
   return (
@@ -41,8 +40,10 @@ export const GoodsCard: FC<Props> = ({
           </Flex>
         </CardBody>
         <CardFooter justifyContent="center" p="4">
-          <Link key={id} href="">
-            詳しくみる
+          <Link key={id} href={`goods/detail?${id}`} passHref>
+            <Button as="a" colorScheme="gray">
+              詳しくみる
+            </Button>
           </Link>
         </CardFooter>
       </Card>

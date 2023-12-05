@@ -1,18 +1,7 @@
-import {
-  useDisclosure,
-  Button,
-  Card,
-  CardBody,
-  Heading,
-  Stack,
-  CardFooter,
-  Flex,
-  Text,
-} from "@chakra-ui/react";
+import { Flex, Text } from "@chakra-ui/react";
 import React, { useState, useEffect } from "react";
-import Image from "next/image";
-import Link from "next/link";
 import { useRouter } from "next/router";
+import { GoodsCard } from "./GoodsCard";
 
 /**
  * 商品データの定義
@@ -28,9 +17,9 @@ export type BookData = {
       thumbnail: string;
     };
   };
-  saleInfo: {
-    buyLink: string;
-  };
+  // saleInfo: {
+  //   buyLink: string;
+  // };
 };
 
 /**
@@ -92,30 +81,8 @@ export const Goods = () => {
          */
         /* GoodsCard */
         <Flex w="full" p="6" gap="8" wrap="wrap" justifyContent="center">
-          {books.map(({ id, volumeInfo, saleInfo }) => (
-            <Card key={id} minW="300" maxW="sm" p="4">
-              <CardBody>
-                <Flex direction="column" alignItems="center">
-                  <Stack mt="2" spacing="3" align="center">
-                    <Image
-                      alt={volumeInfo.title}
-                      src={volumeInfo.imageLinks.thumbnail}
-                      width={100}
-                      height={100}
-                    />
-                    <Heading size="sm">{volumeInfo.title}</Heading>
-                    <Text>発売日：{volumeInfo.publishedDate}</Text>
-                  </Stack>
-                </Flex>
-              </CardBody>
-              <CardFooter justifyContent="center" p="4">
-                <Link key={id} href={`goods/detail?${id}`} passHref>
-                  <Button as="a" colorScheme="gray">
-                    詳しくみる
-                  </Button>
-                </Link>
-              </CardFooter>
-            </Card>
+          {books.map((item) => (
+            <GoodsCard item={item} />
           ))}
         </Flex>
       )}
