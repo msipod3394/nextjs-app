@@ -1,6 +1,17 @@
+import {
+  Box,
+  Button,
+  Container,
+  Divider,
+  Heading,
+  Stack,
+  Text,
+} from "@chakra-ui/react";
 import { useRouter } from "next/router";
-import { FC, useEffect, useState } from "react";
 import { BookData } from "./Goods";
+import { FC, useEffect, useState } from "react";
+import Image from "next/image";
+import Link from "next/link";
 
 type Props = {
   item: BookData;
@@ -16,12 +27,25 @@ export const GoodsDetail: FC<Props> = () => {
     .map((key) => `${key}=${query[key]}`)
     .join("&");
 
-  console.log(id);
+  // idが渡っていなかったら、一覧ページに戻る
+  if (!id) {
+    router.push("/goods");
+    return;
+  }
 
-  // idに一致したアイテムの情報を再取得
+  // API通信中か完了かの判定
+  const [loading, setLoading] = useState(true);
+
+  /**
+   * idに一致したアイテムの情報を再取得
+   */
+  // 取得した情報を管理するstate
   const [book, setBook] = useState<BookData | null>(null);
+
+  // 取得先URL
   const url = `https://www.googleapis.com/books/v1/volumes?q=SPY%C3%97FAMILY?${id}`;
 
+  // データ通信
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -34,27 +58,99 @@ export const GoodsDetail: FC<Props> = () => {
       } catch (error) {
         // エラー時
         console.error(error);
+      } finally {
+        // 通信が完了したら
+        setLoading(false);
       }
     };
     fetchData();
   }, [url]);
 
-  console.log(book);
-
   return (
-    <div>
-      {book ? (
-        <div>
-          <h1>{book.volumeInfo.title}</h1>
-          <p>著者: {book.volumeInfo.authors.join(", ")}</p>
-          <p>出版日: {book.volumeInfo.publishedDate}</p>
-          <p>商品詳細: {book.volumeInfo.description}</p>
-          <p>出版日: {book.saleInfo.buyLink}</p>
-          {/* 他の詳細情報もここに追加 */}
-        </div>
+    <>
+      {loading ? (
+        /**
+         * API通信完了前
+         */
+        <Text align="center">読み込み中</Text>
       ) : (
-        <p>読み込み中...</p>
+        /**
+         * API通信完了後
+         */
+        <Container>
+          <Stack mb="8" align="center">
+            <Heading mb="4">{book.volumeInfo.title}</Heading>
+            <Image
+              alt={book.volumeInfo.title}
+              src={book.volumeInfo.imageLinks.thumbnail}
+              width={240}
+              height={240}
+            />
+          </Stack>
+          <Stack mb="8">
+            <Text>著者: {book.volumeInfo.authors.join(", ")}</Text>
+            <Text>出版日: {book.volumeInfo.publishedDate}</Text>
+            <Text>商品詳細: {book.volumeInfo.description}</Text>
+          </Stack>
+          <Stack mb="4" align="center" spacing="50px">
+            <Button
+              width="50%"
+              as="a"
+              href={book.saleInfo.buyLink}
+              target="_blank"
+              rel="noopener noreferrer"
+              colorScheme="blue"
+            >
+              購入する
+            </Button>
+            <Link href="/goods" passHref>
+              <Button as="a" colorScheme="blue" variant="outline">
+                一覧に戻る
+              </Button>
+            </Link>
+          </Stack>
+        </Container>
       )}
-    </div>
+
+      {/* <Box>
+        {book ? (
+          <Container>
+            <Stack mb="8" align="center">
+              <Heading mb="4">{book.volumeInfo.title}</Heading>
+              <Image
+                alt={book.volumeInfo.title}
+                src={book.volumeInfo.imageLinks.thumbnail}
+                width={240}
+                height={240}
+              />
+            </Stack>
+            <Stack mb="8">
+              <Text>著者: {book.volumeInfo.authors.join(", ")}</Text>
+              <Text>出版日: {book.volumeInfo.publishedDate}</Text>
+              <Text>商品詳細: {book.volumeInfo.description}</Text>
+            </Stack>
+            <Stack mb="4" align="center" spacing="50px">
+              <Button
+                width="50%"
+                as="a"
+                href={book.saleInfo.buyLink}
+                target="_blank"
+                rel="noopener noreferrer"
+                colorScheme="blue"
+              >
+                購入する
+              </Button>
+              <Link href="/goods" passHref>
+                <Button as="a" colorScheme="blue" variant="outline">
+                  一覧に戻る
+                </Button>
+              </Link>
+            </Stack>
+          </Container>
+        ) : (
+          <p>読み込み中...</p>
+        )}
+      </Box> */}
+    </>
   );
 };
