@@ -27,12 +27,6 @@ export const GoodsDetail: FC<Props> = () => {
     .map((key) => `${key}=${query[key]}`)
     .join("&");
 
-  // idが渡っていなかったら、一覧ページに戻る
-  if (!id) {
-    router.push("/goods");
-    return;
-  }
-
   // API通信中か完了かの判定
   const [loading, setLoading] = useState(true);
 
@@ -47,6 +41,12 @@ export const GoodsDetail: FC<Props> = () => {
 
   // データ通信
   useEffect(() => {
+    // idが渡っていなかったら、一覧ページに戻る（⭐️ここ詰まったので聞く）
+    if (!id) {
+      router.push("/goods");
+      return;
+    }
+
     const fetchData = async () => {
       try {
         const response = await fetch(url);
@@ -104,7 +104,7 @@ export const GoodsDetail: FC<Props> = () => {
               購入する
             </Button>
             <Link href="/goods" passHref>
-              <Button as="a" colorScheme="blue" variant="outline">
+              <Button as="a" colorScheme="gray" variant="outline">
                 一覧に戻る
               </Button>
             </Link>

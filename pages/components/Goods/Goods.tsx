@@ -110,7 +110,9 @@ export const Goods = () => {
               </CardBody>
               <CardFooter justifyContent="center" p="4">
                 <Link key={id} href={`goods/detail?${id}`} passHref>
-                  詳しくみる
+                  <Button as="a" colorScheme="gray">
+                    詳しくみる
+                  </Button>
                 </Link>
               </CardFooter>
             </Card>
