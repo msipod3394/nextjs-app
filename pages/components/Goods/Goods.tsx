@@ -1,4 +1,4 @@
-import { Flex, Text } from "@chakra-ui/react";
+import { Box, Button, Center, Flex, Text } from "@chakra-ui/react";
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import { GoodsCard } from "./GoodsCard";
@@ -32,6 +32,9 @@ export const Goods = () => {
   // 取得した情報を管理するstate
   const [books, setBooks] = useState<BookData[]>([]);
 
+  // 昇順・降順の切替状況を管理するstate
+  const [ascendingOrder, setAscendingOrder] = useState(false); // 初期値は降順
+
   // 取得先URL
   const url = "https://www.googleapis.com/books/v1/volumes?q=SPY%C3%97FAMILY";
 
@@ -40,18 +43,25 @@ export const Goods = () => {
     const fetchData = async () => {
       try {
         const response = await fetch(url);
+
         if (!response.ok) {
           throw new Error("ネットワークエラーです");
         }
+
         const data = await response.json();
 
         // 発売日が新しい順に並び替え
-        const sortedData = data.items.sort((a, b) =>
-          a.volumeInfo.publishedDate > b.volumeInfo.publishedDate ? -1 : 1
-        );
-        console.log(sortedData);
+        const sortedData = data.items.sort((a, b) => {
+          const order = ascendingOrder ? 1 : -1; // ここで useStateのascendingOrderを見に行く
 
-        setBooks(sortedData || []);
+          // setStateで確認したorderの値で並び替え
+          return a.volumeInfo.publishedDate > b.volumeInfo.publishedDate
+            ? order
+            : -order;
+        });
+
+        console.log(sortedData);
+        setBooks(sortedData || []); // 配列にセット
       } catch (error) {
         // エラー時
         console.error(error);
@@ -61,7 +71,12 @@ export const Goods = () => {
       }
     };
     fetchData();
-  }, []);
+  }, [ascendingOrder]); // ascendingOrderが変わったら、再びapi通信（⭐️もっといいやり方あるかも…）
+
+  // 昇順・降順の切替機能
+  const toggleSortOrder = () => {
+    setAscendingOrder((prevOrder) => !prevOrder);
+  };
 
   return (
     <>
@@ -74,12 +89,24 @@ export const Goods = () => {
         /**
          * API通信完了後
          */
-        /* GoodsCard */
-        <Flex w="full" p="6" gap="8" wrap="wrap" justifyContent="center">
-          {books.map((item) => (
-            <GoodsCard item={item} />
-          ))}
-        </Flex>
+        <Box>
+          <Center>
+            {/* 昇順・降順の切替機能 */}
+            <Button
+              onClick={toggleSortOrder}
+              colorScheme="blue"
+              variant="outline"
+            >
+              {ascendingOrder ? "昇順に並び替える" : "降順に並び替える"}
+            </Button>
+          </Center>
+          {/* カードの展開 */}
+          <Flex w="full" p="6" gap="8" wrap="wrap" justifyContent="center">
+            {books.map((item) => (
+              <GoodsCard key={item.id} item={item} />
+            ))}
+          </Flex>
+        </Box>
       )}
     </>
   );
