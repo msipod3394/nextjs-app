@@ -26,7 +26,13 @@ export const Goods = () => {
   // ルーターを初期化
   const router = useRouter();
 
-  // API通信中か完了かの判定
+  // 取得先URL
+  const url = "https://www.googleapis.com/books/v1/volumes?q=SPY%C3%97FAMILY";
+
+  /**
+   * state
+   */
+  // API通信が完了したかを管理するstate
   const [loading, setLoading] = useState(true);
 
   // 取得した情報を管理するstate
@@ -35,33 +41,29 @@ export const Goods = () => {
   // 昇順・降順の切替状況を管理するstate
   const [ascendingOrder, setAscendingOrder] = useState(false); // 初期値は降順
 
-  // 取得先URL
-  const url = "https://www.googleapis.com/books/v1/volumes?q=SPY%C3%97FAMILY";
-
-  // データ通信
+  /**
+   * api通信
+   */
   useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await fetch(url);
-
         if (!response.ok) {
           throw new Error("ネットワークエラーです");
         }
-
         const data = await response.json();
 
-        // 発売日が新しい順に並び替え
-        const sortedData = data.items.sort((a, b) => {
-          const order = ascendingOrder ? 1 : -1; // ここで useStateのascendingOrderを見に行く
+        // // 発売日が新しい順に並び替え
+        // const sortedData = data.items.sort((a, b) => {
+        //   const order = ascendingOrder ? 1 : -1; // ここで useStateのascendingOrderを見に行く
+        //   // setStateで確認したorderの値で並び替え
+        //   return a.volumeInfo.publishedDate > b.volumeInfo.publishedDate
+        //     ? order
+        //     : -order;
+        // });
+        // console.log(sortedData);
 
-          // setStateで確認したorderの値で並び替え
-          return a.volumeInfo.publishedDate > b.volumeInfo.publishedDate
-            ? order
-            : -order;
-        });
-
-        console.log(sortedData);
-        setBooks(sortedData || []); // 配列にセット
+        setBooks(data.items || []); // 配列にセット
       } catch (error) {
         // エラー時
         console.error(error);
@@ -71,11 +73,28 @@ export const Goods = () => {
       }
     };
     fetchData();
-  }, [ascendingOrder]); // ascendingOrderが変わったら、再びapi通信（⭐️もっといいやり方あるかも…）
+  }, []);
 
-  // 昇順・降順の切替機能
+  /**
+   * 昇順・降順の切替機能
+   */
+  useEffect(() => {
+    // booksをコピーして新しい配列を作る→ascendingOrderの状況をみてソート
+    const sortedData = [...books].sort((a, b) => {
+      const order = ascendingOrder ? 1 : -1; // ここで useStateのascendingOrderを見に行く
+
+      // setStateで確認したorderの値で並び替え
+      return a.volumeInfo.publishedDate > b.volumeInfo.publishedDate
+        ? order
+        : -order;
+    });
+    // console.log(sortedData);
+
+    setBooks(sortedData);
+  }, [ascendingOrder]); // ascendingOrderの状態が変化したら
+
   const toggleSortOrder = () => {
-    setAscendingOrder((prevOrder) => !prevOrder);
+    setAscendingOrder((prevSetOrder) => !prevSetOrder); // stateを反転させる
   };
 
   return (
