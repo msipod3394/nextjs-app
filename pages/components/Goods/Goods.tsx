@@ -17,9 +17,6 @@ export type BookData = {
       thumbnail: string;
     };
   };
-  // saleInfo: {
-  //   buyLink: string;
-  // };
 };
 
 /**
@@ -31,15 +28,6 @@ export const Goods = () => {
 
   // API通信中か完了かの判定
   const [loading, setLoading] = useState(true);
-
-  // モーダル展開
-  // const { isOpen, onOpen, onClose, onToggle } = useDisclosure(); // useDisclosure：モーダルの開閉状態を管理
-  // const [selectedModal, setSelectedModal] = useState<BookData | null>(null);
-  // idと一致するものをdataから見つけ、onOpenを実行
-  // const openModal = (modalId) => {
-  //   setSelectedModal(books.find((item) => item.id === modalId));
-  //   onOpen();
-  // };
 
   // 取得した情報を管理するstate
   const [books, setBooks] = useState<BookData[]>([]);
@@ -56,7 +44,14 @@ export const Goods = () => {
           throw new Error("ネットワークエラーです");
         }
         const data = await response.json();
-        setBooks(data.items || []);
+
+        // 発売日が新しい順に並び替え
+        const sortedData = data.items.sort((a, b) =>
+          a.volumeInfo.publishedDate > b.volumeInfo.publishedDate ? -1 : 1
+        );
+        console.log(sortedData);
+
+        setBooks(sortedData || []);
       } catch (error) {
         // エラー時
         console.error(error);
