@@ -23,26 +23,29 @@ export type BookData = {
  * Goodsコンポーネント
  */
 export const Goods = () => {
-  // ルーターを初期化
+  // ルーター初期化
   const router = useRouter();
 
-  // 取得先URL
+  // 書籍データURL
   const url = "https://www.googleapis.com/books/v1/volumes?q=SPY%C3%97FAMILY";
 
-  /**
-   * state
-   */
-  // API通信が完了したかを管理するstate
+  // 通信が完了したかを管理
   const [loading, setLoading] = useState(true);
 
-  // 取得した情報を管理するstate
+  // 取得データの管理
   const [books, setBooks] = useState<BookData[]>([]);
 
-  // 昇順・降順の切替状況を管理するstate
-  const [ascendingOrder, setAscendingOrder] = useState(false); // 初期値は降順
+  // 降順・昇順の管理
+  const [ascendingOrder, setAscendingOrder] = useState(false);
+
+  // ページャーのページ番号管理
+  const [currentPage, setCurrentPage] = useState(1);
+
+  // 1ページの表示件数
+  const itemsPerPage = 3;
 
   /**
-   * api通信
+   * データ通信
    */
   useEffect(() => {
     const fetchData = async () => {
@@ -52,65 +55,60 @@ export const Goods = () => {
           throw new Error("ネットワークエラーです");
         }
         const data = await response.json();
-
-        // // 発売日が新しい順に並び替え
-        // const sortedData = data.items.sort((a, b) => {
-        //   const order = ascendingOrder ? 1 : -1; // ここで useStateのascendingOrderを見に行く
-        //   // setStateで確認したorderの値で並び替え
-        //   return a.volumeInfo.publishedDate > b.volumeInfo.publishedDate
-        //     ? order
-        //     : -order;
-        // });
-        // console.log(sortedData);
-
-        setBooks(data.items || []); // 配列にセット
+        setBooks(data.items || []); // 取得したデータをbooksに格納
       } catch (error) {
-        // エラー時
         console.error(error);
       } finally {
-        // 通信が完了したら
-        setLoading(false);
+        setLoading(false); // 通信完了、state変更
       }
     };
     fetchData();
   }, []);
 
   /**
-   * 昇順・降順の切替機能
+   * 降順・昇順機能
+   * [フック] 読込完了時、昇降順の変更
    */
   useEffect(() => {
-    // booksをコピーして新しい配列を作る→ascendingOrderの状況をみてソート
-    const sortedData = [...books].sort((a, b) => {
-      const order = ascendingOrder ? 1 : -1; // ここで useStateのascendingOrderを見に行く
+    if (!loading) {
+      const sortedData = [...books].sort((a, b) => {
+        const order = ascendingOrder ? 1 : -1;
+        return a.volumeInfo.publishedDate > b.volumeInfo.publishedDate
+          ? order
+          : -order;
+      });
+      setBooks(sortedData);
+      setCurrentPage(1); // 1ページ目に戻る
+    }
+  }, [loading, ascendingOrder]);
 
-      // setStateで確認したorderの値で並び替え
-      return a.volumeInfo.publishedDate > b.volumeInfo.publishedDate
-        ? order
-        : -order;
-    });
-    // console.log(sortedData);
+  /**
+   * ページング機能
+   */
+  const totalPages = Math.ceil(books.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const displayedBooks = books.slice(startIndex, endIndex);
 
-    setBooks(sortedData);
-  }, [ascendingOrder]); // ascendingOrderの状態が変化したら
+  const handleNextPage = () => {
+    setCurrentPage((prevPage) => Math.min(prevPage + 1, totalPages));
+  };
+
+  const handlePrevPage = () => {
+    setCurrentPage((prevPage) => Math.max(prevPage - 1, 1));
+  };
 
   const toggleSortOrder = () => {
-    setAscendingOrder((prevSetOrder) => !prevSetOrder); // stateを反転させる
+    setAscendingOrder((prevSetOrder) => !prevSetOrder);
   };
 
   return (
     <>
       {loading ? (
-        /**
-         * API通信完了前
-         */
         <Text align="center">読み込み中</Text>
       ) : (
-        /**
-         * API通信完了後
-         */
         <Box>
           <Center>
-            {/* 昇順・降順の切替機能 */}
             <Button
               onClick={toggleSortOrder}
               colorScheme="blue"
@@ -119,12 +117,32 @@ export const Goods = () => {
               {ascendingOrder ? "昇順に並び替える" : "降順に並び替える"}
             </Button>
           </Center>
-          {/* カードの展開 */}
           <Flex w="full" p="6" gap="8" wrap="wrap" justifyContent="center">
-            {books.map((item) => (
+            {displayedBooks.map((item) => (
               <GoodsCard key={item.id} item={item} />
             ))}
           </Flex>
+          <Center>
+            <Button
+              onClick={handlePrevPage}
+              colorScheme="blue"
+              variant="outline"
+              disabled={currentPage === 1}
+            >
+              前のページ
+            </Button>
+            <Text mx="4">
+              ページ {currentPage} / {totalPages}
+            </Text>
+            <Button
+              onClick={handleNextPage}
+              colorScheme="blue"
+              variant="outline"
+              disabled={currentPage === totalPages}
+            >
+              次のページ
+            </Button>
+          </Center>
         </Box>
       )}
     </>
