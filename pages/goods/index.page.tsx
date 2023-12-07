@@ -1,9 +1,8 @@
-import { ChakraProvider } from "@chakra-ui/react";
-import { Layout } from "../common/layout";
 import { Box, Button, Center, Flex, Text } from "@chakra-ui/react";
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import { GoodsCard } from "./card";
+import Layout from "../layouts/layout";
 
 /**
  * 商品データの定義
@@ -44,7 +43,7 @@ export default function Goods() {
   const [currentPage, setCurrentPage] = useState(1);
 
   // 1ページの表示件数
-  const itemsPerPage = 3;
+  const itemsPerPage = 4;
 
   /**
    * データ通信
@@ -105,50 +104,48 @@ export default function Goods() {
   };
 
   return (
-    <ChakraProvider>
-      <Layout>
-        {loading ? (
-          <Text align="center">読み込み中</Text>
-        ) : (
-          <Box>
-            <Center>
-              <Button
-                onClick={toggleSortOrder}
-                colorScheme="blue"
-                variant="outline"
-              >
-                {ascendingOrder ? "昇順に並び替える" : "降順に並び替える"}
-              </Button>
-            </Center>
-            <Flex w="full" p="6" gap="8" wrap="wrap" justifyContent="center">
-              {displayedBooks.map((item) => (
-                <GoodsCard key={item.id} item={item} />
-              ))}
-            </Flex>
-            <Center>
-              <Button
-                onClick={handlePrevPage}
-                colorScheme="blue"
-                variant="outline"
-                disabled={currentPage === 1}
-              >
-                前のページ
-              </Button>
-              <Text mx="4">
-                ページ {currentPage} / {totalPages}
-              </Text>
-              <Button
-                onClick={handleNextPage}
-                colorScheme="blue"
-                variant="outline"
-                disabled={currentPage === totalPages}
-              >
-                次のページ
-              </Button>
-            </Center>
-          </Box>
-        )}
-      </Layout>
-    </ChakraProvider>
+    <Layout>
+      {loading ? (
+        <Text align="center">読み込み中</Text>
+      ) : (
+        <Box w="full">
+          <Center>
+            <Button
+              onClick={toggleSortOrder}
+              colorScheme="blue"
+              variant="outline"
+            >
+              {ascendingOrder ? "昇順に並び替える" : "降順に並び替える"}
+            </Button>
+          </Center>
+          <Flex w="full" p="4" marginY="20px" gap="8" wrap="wrap" justifyContent="center">
+            {displayedBooks.map((item) => (
+              <GoodsCard key={item.id} item={item} />
+            ))}
+          </Flex>
+          <Center>
+            <Button
+              onClick={handlePrevPage}
+              colorScheme="blue"
+              variant="outline"
+              disabled={currentPage === 1}
+            >
+              前のページ
+            </Button>
+            <Text mx="4">
+              ページ {currentPage} / {totalPages}
+            </Text>
+            <Button
+              onClick={handleNextPage}
+              colorScheme="blue"
+              variant="outline"
+              disabled={currentPage === totalPages}
+            >
+              次のページ
+            </Button>
+          </Center>
+        </Box>
+      )}
+    </Layout>
   );
 }

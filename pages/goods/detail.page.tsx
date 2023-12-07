@@ -1,5 +1,5 @@
 import { ChakraProvider } from "@chakra-ui/react";
-import { Layout } from "../components/layout";
+// import { Layout } from "../common/layout";
 import { Button, Container, Heading, Stack, Text } from "@chakra-ui/react";
 import { useRouter } from "next/router";
 import { FC, useEffect, useState } from "react";
@@ -74,7 +74,7 @@ export default function GoodsDetail(): FC<Props> {
 
   return (
     <ChakraProvider>
-      <Layout>
+      {/* <Layout> */}
         {loading ? (
           /**
            * API通信完了前
@@ -118,7 +118,7 @@ export default function GoodsDetail(): FC<Props> {
             </Stack>
           </Container>
         )}
-      </Layout>
+      {/* </Layout> */}
     </ChakraProvider>
   );
 }

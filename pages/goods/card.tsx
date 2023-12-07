@@ -13,6 +13,7 @@ import { FC } from "react";
 import { BookData } from "./index.page";
 import Link from "next/link";
 
+
 type Props = {
   item: BookData;
   // openModal: (id: string) => void;
