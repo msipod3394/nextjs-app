@@ -1,10 +1,10 @@
-import { Nav } from "./Header";
+// import { Nav } from "./Header";
 
 export const Layout = ({ children }) => {
   return (
     <>
       <main>
-        <Nav />
+        {/* <Nav /> */}
         {children}
       </main>
     </>

@@ -1,5 +1,5 @@
 import { ChakraProvider } from "@chakra-ui/react";
-import { Layout } from "../components/layout";
+import { Layout } from "../common/layout";
 import { Box, Button, Center, Flex, Text } from "@chakra-ui/react";
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/router";
