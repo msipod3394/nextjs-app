@@ -1,10 +1,9 @@
-import { ChakraProvider } from "@chakra-ui/react";
-// import { Layout } from "../common/layout";
 import { Button, Container, Heading, Stack, Text } from "@chakra-ui/react";
 import { useRouter } from "next/router";
 import { FC, useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import Layout from "../layouts/layout";
 
 type Props = {
   id: string;
@@ -73,52 +72,50 @@ export default function GoodsDetail(): FC<Props> {
   }, [url]);
 
   return (
-    <ChakraProvider>
-      {/* <Layout> */}
-        {loading ? (
-          /**
-           * API通信完了前
-           */
-          <Text align="center">読み込み中</Text>
-        ) : (
-          /**
-           * API通信完了後
-           */
-          <Container>
-            <Stack mb="8" align="center">
-              <Heading mb="4">{book.volumeInfo.title}</Heading>
-              <Image
-                alt={book.volumeInfo.title}
-                src={book.volumeInfo.imageLinks.thumbnail}
-                width={240}
-                height={240}
-              />
-            </Stack>
-            <Stack mb="8">
-              <Text>著者: {book.volumeInfo.authors.join(", ")}</Text>
-              <Text>出版日: {book.volumeInfo.publishedDate}</Text>
-              <Text>商品詳細: {book.volumeInfo.description}</Text>
-            </Stack>
-            <Stack mb="4" align="center" spacing="50px">
-              <Button
-                width="50%"
-                as="a"
-                href={book.saleInfo.buyLink}
-                target="_blank"
-                rel="noopener noreferrer"
-                colorScheme="blue"
-              >
-                購入する
+    <Layout>
+      {loading ? (
+        /**
+         * API通信完了前
+         */
+        <Text align="center">読み込み中</Text>
+      ) : (
+        /**
+         * API通信完了後
+         */
+        <Container>
+          <Stack mb="8" align="center">
+            <Heading mb="4">{book.volumeInfo.title}</Heading>
+            <Image
+              alt={book.volumeInfo.title}
+              src={book.volumeInfo.imageLinks.thumbnail}
+              width={240}
+              height={240}
+            />
+          </Stack>
+          <Stack mb="8">
+            <Text>著者: {book.volumeInfo.authors.join(", ")}</Text>
+            <Text>出版日: {book.volumeInfo.publishedDate}</Text>
+            <Text>商品詳細: {book.volumeInfo.description}</Text>
+          </Stack>
+          <Stack mb="4" align="center" spacing="50px">
+            <Button
+              width="50%"
+              as="a"
+              href={book.saleInfo.buyLink}
+              target="_blank"
+              rel="noopener noreferrer"
+              colorScheme="blue"
+            >
+              購入する
+            </Button>
+            <Link href="/goods" passHref>
+              <Button as="a" colorScheme="gray">
+                一覧に戻る
               </Button>
-              <Link href="/goods" passHref>
-                <Button as="a" colorScheme="gray">
-                  一覧に戻る
-                </Button>
-              </Link>
-            </Stack>
-          </Container>
-        )}
-      {/* </Layout> */}
-    </ChakraProvider>
+            </Link>
+          </Stack>
+        </Container>
+      )}
+    </Layout>
   );
 }

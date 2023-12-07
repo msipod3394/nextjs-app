@@ -21,7 +21,12 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             <Header />
           </GridItem>
           <GridItem>
-            <Container as="main" paddingY="40px" maxW="100%" minH={`calc(100vh - 120px)`}>
+            <Container
+              as="main"
+              maxW="100%"
+              minH={`calc(100vh - 120px)`}
+              paddingY="40px"
+            >
               {children}
             </Container>
           </GridItem>
