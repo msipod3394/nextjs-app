@@ -21,9 +21,16 @@ type Props = {
   };
 };
 
-export default function GoodsDetail(): FC<Props> {
+export default function GoodsDetail() {
   const router = useRouter();
+
+  // const { query } = router;
+  // console.log(query);
+  // const { id: bookId } = query as {id: string} ;
+  // console.log("id",bookId );
+
   const { query } = router;
+  console.log(query);
 
   // クエリパラメータを取得
   const id = Object.keys(query)
@@ -93,7 +100,7 @@ export default function GoodsDetail(): FC<Props> {
             />
           </Stack>
           <Stack mb="8">
-            <Text>著者: {book.volumeInfo.authors.join(", ")}</Text>
+            <Text>著者: {book.volumeInfo.authors}</Text>
             <Text>出版日: {book.volumeInfo.publishedDate}</Text>
             <Text>商品詳細: {book.volumeInfo.description}</Text>
           </Stack>
