@@ -6,7 +6,6 @@ import { Container, ChakraProvider, Grid, GridItem } from "@chakra-ui/react";
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
     <>
-      <ChakraProvider>
         <Grid
           templateAreas={`"header"
           "container"
@@ -34,7 +33,6 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             <Footer />
           </GridItem>
         </Grid>
-      </ChakraProvider>
     </>
   );
 }
