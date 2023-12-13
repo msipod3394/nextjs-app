@@ -1,5 +1,4 @@
-import { Flex, Box, Text, Link } from "@chakra-ui/react";
-// import Link from "next/link";
+import { Flex, Text, Link } from "@chakra-ui/react";
 
 export const Header = () => {
   return (
@@ -20,7 +19,7 @@ export const Header = () => {
           <Link href="/goods">Goods</Link>
         </Text>
         <Text fontSize="md" fontWeight="bold" ml="4">
-          <Link href="/todo">Todo（作成中）</Link>
+          <Link href="/form">ProfileForm</Link>
         </Text>
       </Flex>
     </Flex>

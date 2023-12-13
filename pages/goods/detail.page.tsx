@@ -3,7 +3,7 @@ import { useRouter } from "next/router";
 import { FC, useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import Layout from "../layouts/layout";
+import Layout from "../../layouts/layout";
 
 type Props = {
   id: string;

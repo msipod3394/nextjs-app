@@ -2,7 +2,7 @@ import { Box, Button, Center, Flex, Text } from "@chakra-ui/react";
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import { GoodsCard } from "./card";
-import Layout from "../layouts/layout";
+import Layout from "../../layouts/layout";
 
 /**
  * 商品データの定義
