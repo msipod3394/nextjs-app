@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Box,
   HStack,
@@ -9,71 +9,31 @@ import {
   Input,
   VStack,
   Text,
+  Select,
+  RadioGroup,
+  Radio,
+  CheckboxGroup,
+  Checkbox,
 } from "@chakra-ui/react";
 import { useForm, Controller, SubmitHandler } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-import * as yup from "yup";
 import Layout from "../layouts/layout";
 import { ErrorMessage } from "@hookform/error-message";
-
-/**
- * 型定義
- */
-type Inputs = {
-  lastName: string;
-  firstName: string;
-  lastNameKana: string;
-  firstNameKana: string;
-  email: string;
-  postcode: string;
-  prefectures: string;
-  city: string;
-  town: string;
-};
-
-/**
- * バリデーション（yup）
- */
-const schema = yup.object().shape({
-  lastName: yup
-    .string()
-    .required("姓は必須です")
-    .max(10, "10文字以上は登録できません")
-    .matches(/^[^\d]+$/, "数字は登録できません"),
-  firstName: yup
-    .string()
-    .required("名は必須です")
-    .max(10, "10文字以上は登録できません")
-    .matches(/^[^\d]+$/, "数字は登録できません"),
-  lastNameKana: yup
-    .string()
-    .required("セイは必須です")
-    .max(10, "10文字以上は登録できません")
-    .matches(/^[\u30A0-\u30FFー]+$/, "全角カタカナで登録してください"),
-  firstNameKana: yup
-    .string()
-    .required("メイは必須です")
-    .max(10, "10文字以上は登録できません")
-    .matches(/^[\u30A0-\u30FFー]+$/, "全角カタカナで登録してください"),
-  email: yup
-    .string()
-    .required("メールアドレスは必須です")
-    .email("有効なメールアドレスを入力してください"),
-  postcode: yup.string().required("郵便番号は必須です"),
-  prefectures: yup.string().required("都道府県は必須です"),
-  city: yup.string().required("市区町村は必須です"),
-  town: yup.string().required("町名は必須です"),
-});
-
-/**
- * zipcloudから住所情報を取得する
- */
-const zipcloudURL = "https://zipcloud.ibsnet.co.jp/api/search?zipcode=";
+import { schema } from "./schema";
+import { onFetchAddress } from "./onFetchAddress";
+import { Inputs } from "./type";
+import {
+  selectBirthDate,
+  selectBirthMonth,
+  selectBirthYear,
+} from "./selectBirth";
+import ConfirmPage from "./confirm.page";
 
 function Form() {
   const {
     control,
     handleSubmit,
+    reset,
     formState: { errors },
     getValues,
     setValue,
@@ -81,47 +41,29 @@ function Form() {
     resolver: yupResolver(schema),
   });
 
-  // API通信で取得した住所
+  // ページ遷移のstate管理
+  const [isConfirm, setIsConfirm] = useState(false);
+
+  // 戻るボタンが押されたときに確認ページから元のフォームに戻る
+  const handleBack = () => {
+    setIsConfirm(false);
+  };
+
+  // 完了画面で戻るボタンが押されたとき、未入力のフォームに戻る
+  const handleReset = () => {
+    setIsConfirm(false);
+    reset();
+  };
+
+  // API通信で取得した住所のstate管理
   const [address, setAddress] = useState(null);
 
-  const onFetchAddress = () => {
-    // ポストコードを取得
-    const postcode = getValues("postcode");
-
-    // 存在チェック
-    if (!postcode) {
-      console.log("ポストコードが空なので処理終了！");
-      return;
-    }
-
-    // - があれば除去
-    const formattedZipcode = String(postcode).replace(/-/g, "");
-
-    // API通信するURLを作成
-    const url = `${zipcloudURL}${formattedZipcode}`;
-
-    // API通信
-    fetch(url)
-      .then((response) => response.json())
-      .then((data) => {
-        console.log("取得した情報:", data.results);
-
-        // 取得した住所を設定
-        setAddress(data.results);
-
-        // フォームの値を更新
-        setValue("prefectures", data.results[0].address1);
-        setValue("city", data.results[0].address2);
-        setValue("town", data.results[0].address3);
-      })
-      .catch((error) => {
-        console.error("Error fetching address information:", error);
-      });
+  // API通信ハンドラ
+  const handleFetchAddress = () => {
+    onFetchAddress(getValues, setAddress, setValue);
   };
 
   const onSubmit: SubmitHandler<Inputs> = (data) => {
-    console.log("onSubmit");
-
     if (Object.keys(errors).length !== 0) {
       console.log("=============== エラーがあります =============== ");
       console.log("エラー:", errors);
@@ -130,162 +72,129 @@ function Form() {
 
     console.log("=============== 成功！ =============== ");
     console.log("フォームデータ:", data);
+
+    // 問題なければ、確認ページに遷移
+    setIsConfirm(true);
   };
 
   return (
     <Layout>
       <Center>
         <Box w="100%" maxW="500px">
-          <VStack spacing="4">
-            {/* Name */}
-            <HStack w="100%" spacing="4" alignItems="flex-start">
-              {/* 姓 / lastName */}
-              <FormControl w="50%" isInvalid={errors.lastName}>
-                <FormLabel htmlFor="lastName" fontWeight="bold">
-                  姓
-                </FormLabel>
-                <Controller
-                  name="lastName"
-                  control={control}
-                  render={({ field }) => <Input {...field} />}
-                />
-                <ErrorMessage
-                  errors={errors}
-                  name="lastName"
-                  render={({ message }) => (
-                    <Text color="red" fontSize="sm">
-                      {message}
-                    </Text>
-                  )}
-                />
-              </FormControl>
-              {/* 名 / firstName */}
-              <FormControl w="50%" isInvalid={errors.firstName}>
-                <FormLabel htmlFor="firstName" fontWeight="bold">
-                  名
-                </FormLabel>
-                <Controller
-                  name="firstName"
-                  control={control}
-                  render={({ field }) => <Input {...field} />}
-                />
-                <ErrorMessage
-                  errors={errors}
-                  name="firstName"
-                  render={({ message }) => (
-                    <Text color="red" fontSize="sm">
-                      {message}
-                    </Text>
-                  )}
-                />
-              </FormControl>
-            </HStack>
-            {/* Name（カナ） */}
-            <HStack w="100%" spacing="4" alignItems="flex-start">
-              {/* セイ / lastNameKana */}
-              <FormControl w="50%" isInvalid={errors.lastNameKana}>
-                <FormLabel htmlFor="lastNameKana" fontWeight="bold">
-                  セイ
-                </FormLabel>
-                <Controller
-                  name="lastNameKana"
-                  control={control}
-                  render={({ field }) => <Input {...field} />}
-                />
-                <ErrorMessage
-                  errors={errors}
-                  name="lastNameKana"
-                  render={({ message }) => (
-                    <Text color="red" fontSize="sm">
-                      {message}
-                    </Text>
-                  )}
-                />
-              </FormControl>
-              {/* メイ / firstNameKana */}
-              <FormControl w="50%" isInvalid={errors.firstNameKana}>
-                <FormLabel htmlFor="firstNameKana" fontWeight="bold">
-                  メイ
-                </FormLabel>
-                <Controller
-                  name="firstNameKana"
-                  control={control}
-                  render={({ field }) => <Input {...field} />}
-                />
-                <ErrorMessage
-                  errors={errors}
-                  name="firstNameKana"
-                  render={({ message }) => (
-                    <Text color="red" fontSize="sm">
-                      {message}
-                    </Text>
-                  )}
-                />
-              </FormControl>
-            </HStack>
-            {/* メールアドレス / email */}
-            <FormControl isInvalid={errors.email}>
-              <FormLabel htmlFor="email" fontWeight="bold">
-                メールアドレス
-              </FormLabel>
-              <Controller
-                name="email"
-                control={control}
-                render={({ field }) => <Input {...field} />}
-              />
-              <ErrorMessage
-                errors={errors}
-                name="email"
-                render={({ message }) => (
-                  <Text color="red" fontSize="sm">
-                    {message}
-                  </Text>
-                )}
-              />
-            </FormControl>
-            {/* 郵便番号 / postcode */}
-            <FormControl>
-              <FormLabel htmlFor="postcode" fontWeight="bold">
-                郵便番号
-              </FormLabel>
-              <HStack>
-                <Controller
-                  name="postcode"
-                  control={control}
-                  render={({ field }) => <Input {...field} />}
-                />
-                <Button onClick={onFetchAddress} colorScheme="teal">
-                  住所取得
-                </Button>
+          {isConfirm ? (
+            // 確認ページを表示
+            <ConfirmPage
+              formData={getValues()}
+              onBack={handleBack}
+              onReset={handleReset}
+              onSubmit={handleSubmit(onSubmit)}
+            />
+          ) : (
+            // フォーム
+            <VStack spacing="4">
+              {/* Name */}
+              <HStack w="100%" spacing="4" alignItems="flex-start">
+                {/* 姓 / lastName */}
+                <FormControl w="50%" isInvalid={errors.lastName} isRequired>
+                  <FormLabel htmlFor="lastName" fontWeight="bold">
+                    姓
+                  </FormLabel>
+                  <Controller
+                    name="lastName"
+                    control={control}
+                    render={({ field }) => <Input {...field} />}
+                  />
+                  <ErrorMessage
+                    errors={errors}
+                    name="lastName"
+                    render={({ message }) => (
+                      <Text color="red" fontSize="sm">
+                        {message}
+                      </Text>
+                    )}
+                  />
+                </FormControl>
+                {/* 名 / firstName */}
+                <FormControl w="50%" isInvalid={errors.firstName} isRequired>
+                  <FormLabel htmlFor="firstName" fontWeight="bold">
+                    名
+                  </FormLabel>
+                  <Controller
+                    name="firstName"
+                    control={control}
+                    render={({ field }) => <Input {...field} />}
+                  />
+                  <ErrorMessage
+                    errors={errors}
+                    name="firstName"
+                    render={({ message }) => (
+                      <Text color="red" fontSize="sm">
+                        {message}
+                      </Text>
+                    )}
+                  />
+                </FormControl>
               </HStack>
-            </FormControl>
-            {/* <HStack w="100%" spacing="4" alignItems="flex-start">
-              {address &&
-                address.map((val, index) => (
-                  <Box key={index}>
-                    <Text>郵便番号: {val.zipcode}</Text>
-                    <Text>都道府県: {val.address1}</Text>
-                    <Text>市区町村: {val.address2}</Text>
-                    <Text>町名: {val.address3}</Text>
-                  </Box>
-                ))}
-            </HStack> */}
-
-            {/* 取得した住所情報を表示 */}
-            <HStack w="100%" spacing="4" alignItems="flex-start">
-              {/* 都道府県 / prefectures */}
-              <FormControl w="50%" isInvalid={errors.prefectures}>
-                <FormLabel htmlFor="prefectures" fontWeight="bold">
-                  都道府県
+              {/* Name（カナ） */}
+              <HStack w="100%" spacing="4" alignItems="flex-start">
+                {/* セイ / lastNameKana */}
+                <FormControl w="50%" isInvalid={errors.lastNameKana} isRequired>
+                  <FormLabel htmlFor="lastNameKana" fontWeight="bold">
+                    セイ
+                  </FormLabel>
+                  <Controller
+                    name="lastNameKana"
+                    control={control}
+                    render={({ field }) => <Input {...field} />}
+                  />
+                  <ErrorMessage
+                    errors={errors}
+                    name="lastNameKana"
+                    render={({ message }) => (
+                      <Text color="red" fontSize="sm">
+                        {message}
+                      </Text>
+                    )}
+                  />
+                </FormControl>
+                {/* メイ / firstNameKana */}
+                <FormControl
+                  w="50%"
+                  isInvalid={errors.firstNameKana}
+                  isRequired
+                >
+                  <FormLabel htmlFor="firstNameKana" fontWeight="bold">
+                    メイ
+                  </FormLabel>
+                  <Controller
+                    name="firstNameKana"
+                    control={control}
+                    render={({ field }) => <Input {...field} />}
+                  />
+                  <ErrorMessage
+                    errors={errors}
+                    name="firstNameKana"
+                    render={({ message }) => (
+                      <Text color="red" fontSize="sm">
+                        {message}
+                      </Text>
+                    )}
+                  />
+                </FormControl>
+              </HStack>
+              {/* メールアドレス / email */}
+              <FormControl isInvalid={errors.email} isRequired>
+                <FormLabel htmlFor="email" fontWeight="bold">
+                  メールアドレス
                 </FormLabel>
                 <Controller
-                  name="prefectures"
+                  name="email"
                   control={control}
                   render={({ field }) => <Input {...field} />}
                 />
                 <ErrorMessage
                   errors={errors}
-                  name="prefectures"
+                  name="email"
                   render={({ message }) => (
                     <Text color="red" fontSize="sm">
                       {message}
@@ -293,59 +202,245 @@ function Form() {
                   )}
                 />
               </FormControl>
-            </HStack>
-            <HStack w="100%" spacing="4" alignItems="flex-start">
-              {/* 市区町村 / city */}
-              <FormControl w="50%" isInvalid={errors.city}>
-                <FormLabel htmlFor="city" fontWeight="bold">
-                  市区町村
+              {/* 郵便番号 / postcode */}
+              <FormControl isRequired>
+                <FormLabel htmlFor="postcode" fontWeight="bold">
+                  郵便番号
                 </FormLabel>
-                <Controller
-                  name="city"
-                  control={control}
-                  render={({ field }) => <Input {...field} />}
-                />
-                <ErrorMessage
-                  errors={errors}
-                  name="city"
-                  render={({ message }) => (
-                    <Text color="red" fontSize="sm">
-                      {message}
-                    </Text>
-                  )}
-                />
+                <HStack>
+                  <Controller
+                    name="postcode"
+                    control={control}
+                    render={({ field }) => <Input {...field} />}
+                  />
+                  <Button onClick={handleFetchAddress} colorScheme="teal">
+                    住所取得
+                  </Button>
+                </HStack>
               </FormControl>
-              {/* 町名 / town */}
-              <FormControl w="50%" isInvalid={errors.town}>
-                <FormLabel htmlFor="town" fontWeight="bold">
-                  町名
-                </FormLabel>
-                <Controller
-                  name="town"
-                  control={control}
-                  render={({ field }) => <Input {...field} />}
-                />
-                <ErrorMessage
-                  errors={errors}
-                  name="town"
-                  render={({ message }) => (
-                    <Text color="red" fontSize="sm">
-                      {message}
-                    </Text>
-                  )}
-                />
-              </FormControl>
-            </HStack>
-
-            {/* 送信 */}
-            <Button
-              width="20%"
-              colorScheme="blue"
-              onClick={handleSubmit(onSubmit)}
-            >
-              送信
-            </Button>
-          </VStack>
+              {/* 取得した住所情報を表示 */}
+              <HStack w="100%" spacing="4" alignItems="flex-start">
+                {/* 都道府県 / prefectures */}
+                <FormControl w="50%" isInvalid={errors.prefectures} isRequired>
+                  <FormLabel htmlFor="prefectures" fontWeight="bold">
+                    都道府県
+                  </FormLabel>
+                  <Controller
+                    name="prefectures"
+                    control={control}
+                    render={({ field }) => <Input {...field} />}
+                  />
+                  <ErrorMessage
+                    errors={errors}
+                    name="prefectures"
+                    render={({ message }) => (
+                      <Text color="red" fontSize="sm">
+                        {message}
+                      </Text>
+                    )}
+                  />
+                </FormControl>
+              </HStack>
+              <HStack w="100%" spacing="4" alignItems="flex-start">
+                {/* 市区町村 / city */}
+                <FormControl w="50%" isInvalid={errors.city} isRequired>
+                  <FormLabel htmlFor="city" fontWeight="bold">
+                    市区町村
+                  </FormLabel>
+                  <Controller
+                    name="city"
+                    control={control}
+                    render={({ field }) => <Input {...field} />}
+                  />
+                  <ErrorMessage
+                    errors={errors}
+                    name="city"
+                    render={({ message }) => (
+                      <Text color="red" fontSize="sm">
+                        {message}
+                      </Text>
+                    )}
+                  />
+                </FormControl>
+                {/* 町名 / town */}
+                <FormControl w="50%" isInvalid={errors.town} isRequired>
+                  <FormLabel htmlFor="town" fontWeight="bold">
+                    町名
+                  </FormLabel>
+                  <Controller
+                    name="town"
+                    control={control}
+                    render={({ field }) => <Input {...field} />}
+                  />
+                  <ErrorMessage
+                    errors={errors}
+                    name="town"
+                    render={({ message }) => (
+                      <Text color="red" fontSize="sm">
+                        {message}
+                      </Text>
+                    )}
+                  />
+                </FormControl>
+              </HStack>
+              {/* 生年月日 */}
+              <HStack w="100%" spacing="4" alignItems="flex-end">
+                <FormControl w="50%" isInvalid={errors.birthYear} isRequired>
+                  <FormLabel htmlFor="birthYear" fontWeight="bold">
+                    生年月日
+                  </FormLabel>
+                  <Controller
+                    name="birthYear"
+                    control={control}
+                    render={({ field }) => (
+                      <Select {...field} placeholder="-">
+                        {selectBirthYear()}
+                      </Select>
+                    )}
+                  />
+                  <ErrorMessage
+                    errors={errors}
+                    name="birthYear"
+                    render={({ message }) => (
+                      <Text color="red" fontSize="sm">
+                        {message}
+                      </Text>
+                    )}
+                  />
+                </FormControl>
+                <FormControl w="50%" isInvalid={errors.birthMonth} isRequired>
+                  <Controller
+                    name="birthMonth"
+                    control={control}
+                    render={({ field }) => (
+                      <Select {...field} placeholder="-">
+                        {selectBirthMonth()}
+                      </Select>
+                    )}
+                  />
+                  <ErrorMessage
+                    errors={errors}
+                    name="birthMonth"
+                    render={({ message }) => (
+                      <Text color="red" fontSize="sm">
+                        {message}
+                      </Text>
+                    )}
+                  />
+                </FormControl>
+                <FormControl w="50%" isInvalid={errors.birthDate} isRequired>
+                  <Controller
+                    name="birthDate"
+                    control={control}
+                    render={({ field }) => (
+                      <Select {...field} placeholder="-">
+                        {selectBirthDate()}
+                      </Select>
+                    )}
+                  />
+                  <ErrorMessage
+                    errors={errors}
+                    name="birthDate"
+                    render={({ message }) => (
+                      <Text color="red" fontSize="sm">
+                        {message}
+                      </Text>
+                    )}
+                  />
+                </FormControl>
+              </HStack>
+              {/* 性別 */}
+              <HStack w="100%" spacing="4" alignItems="flex-start">
+                <FormControl w="100%" isInvalid={errors.gender} isRequired>
+                  <FormLabel htmlFor="gender" fontWeight="bold">
+                    性別
+                  </FormLabel>
+                  <Controller
+                    name="gender"
+                    control={control}
+                    render={({ field }) => (
+                      <RadioGroup
+                        onChange={(value) => setValue("gender", value)}
+                        value={field.value}
+                      >
+                        <HStack spacing={8}>
+                          <Radio {...field} value="male">
+                            男性
+                          </Radio>
+                          <Radio {...field} value="female">
+                            女性
+                          </Radio>
+                          <Radio {...field} value="other">
+                            その他
+                          </Radio>
+                        </HStack>
+                      </RadioGroup>
+                    )}
+                  />
+                  <ErrorMessage
+                    errors={errors}
+                    name="gender"
+                    render={({ message }) => (
+                      <Text color="red" fontSize="sm">
+                        {message}
+                      </Text>
+                    )}
+                  />
+                </FormControl>
+              </HStack>
+              {/* 好きな食べ物 / food */}
+              <HStack w="100%" spacing="4" alignItems="flex-start">
+                <FormControl isInvalid={errors.food} isRequired>
+                  <FormLabel fontWeight="bold">好きな食べ物</FormLabel>
+                  <CheckboxGroup colorScheme="teal" defaultValue={[]}>
+                    <HStack spacing={8}>
+                      <Checkbox
+                        value="sushi"
+                        onChange={(e) =>
+                          setValue("food", e.target.checked ? ["寿司"] : [])
+                        }
+                      >
+                        寿司🍣
+                      </Checkbox>
+                      <Checkbox
+                        value="ramen"
+                        onChange={(e) =>
+                          setValue("food", e.target.checked ? ["ラーメン"] : [])
+                        }
+                      >
+                        ラーメン🍜
+                      </Checkbox>
+                      <Checkbox
+                        value="焼肉"
+                        onChange={(e) =>
+                          setValue("food", e.target.checked ? ["焼肉"] : [])
+                        }
+                      >
+                        焼肉🍖
+                      </Checkbox>
+                    </HStack>
+                  </CheckboxGroup>
+                  <ErrorMessage
+                    errors={errors}
+                    name="food"
+                    render={({ message }) => (
+                      <Text color="red" fontSize="sm">
+                        {message}
+                      </Text>
+                    )}
+                  />
+                </FormControl>
+              </HStack>
+              {/* 送信 */}
+              <Button
+                colorScheme="blue"
+                onClick={handleSubmit(onSubmit)}
+                mt={10}
+              >
+                送信
+              </Button>
+            </VStack>
+          )}
         </Box>
       </Center>
     </Layout>
