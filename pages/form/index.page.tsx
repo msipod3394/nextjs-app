@@ -95,7 +95,7 @@ function Form() {
               {/* Name */}
               <HStack w="100%" spacing="4" alignItems="flex-start">
                 {/* 姓 / lastName */}
-                <FormControl w="50%" isInvalid={errors.lastName} isRequired>
+                <FormControl w="50%" isRequired>
                   <FormLabel htmlFor="lastName" fontWeight="bold">
                     姓
                   </FormLabel>
@@ -115,7 +115,7 @@ function Form() {
                   />
                 </FormControl>
                 {/* 名 / firstName */}
-                <FormControl w="50%" isInvalid={errors.firstName} isRequired>
+                <FormControl w="50%" isRequired>
                   <FormLabel htmlFor="firstName" fontWeight="bold">
                     名
                   </FormLabel>
@@ -138,7 +138,7 @@ function Form() {
               {/* Name（カナ） */}
               <HStack w="100%" spacing="4" alignItems="flex-start">
                 {/* セイ / lastNameKana */}
-                <FormControl w="50%" isInvalid={errors.lastNameKana} isRequired>
+                <FormControl w="50%" isRequired>
                   <FormLabel htmlFor="lastNameKana" fontWeight="bold">
                     セイ
                   </FormLabel>
@@ -158,11 +158,7 @@ function Form() {
                   />
                 </FormControl>
                 {/* メイ / firstNameKana */}
-                <FormControl
-                  w="50%"
-                  isInvalid={errors.firstNameKana}
-                  isRequired
-                >
+                <FormControl w="50%" isRequired>
                   <FormLabel htmlFor="firstNameKana" fontWeight="bold">
                     メイ
                   </FormLabel>
@@ -183,7 +179,7 @@ function Form() {
                 </FormControl>
               </HStack>
               {/* メールアドレス / email */}
-              <FormControl isInvalid={errors.email} isRequired>
+              <FormControl isRequired>
                 <FormLabel htmlFor="email" fontWeight="bold">
                   メールアドレス
                 </FormLabel>
@@ -221,7 +217,7 @@ function Form() {
               {/* 取得した住所情報を表示 */}
               <HStack w="100%" spacing="4" alignItems="flex-start">
                 {/* 都道府県 / prefectures */}
-                <FormControl w="50%" isInvalid={errors.prefectures} isRequired>
+                <FormControl w="50%" isRequired>
                   <FormLabel htmlFor="prefectures" fontWeight="bold">
                     都道府県
                   </FormLabel>
@@ -243,7 +239,7 @@ function Form() {
               </HStack>
               <HStack w="100%" spacing="4" alignItems="flex-start">
                 {/* 市区町村 / city */}
-                <FormControl w="50%" isInvalid={errors.city} isRequired>
+                <FormControl w="50%" isRequired>
                   <FormLabel htmlFor="city" fontWeight="bold">
                     市区町村
                   </FormLabel>
@@ -263,7 +259,7 @@ function Form() {
                   />
                 </FormControl>
                 {/* 町名 / town */}
-                <FormControl w="50%" isInvalid={errors.town} isRequired>
+                <FormControl w="50%" isRequired>
                   <FormLabel htmlFor="town" fontWeight="bold">
                     町名
                   </FormLabel>
@@ -285,7 +281,7 @@ function Form() {
               </HStack>
               {/* 生年月日 */}
               <HStack w="100%" spacing="4" alignItems="flex-end">
-                <FormControl w="50%" isInvalid={errors.birthYear} isRequired>
+                <FormControl w="50%" isRequired>
                   <FormLabel htmlFor="birthYear" fontWeight="bold">
                     生年月日
                   </FormLabel>
@@ -308,7 +304,7 @@ function Form() {
                     )}
                   />
                 </FormControl>
-                <FormControl w="50%" isInvalid={errors.birthMonth} isRequired>
+                <FormControl w="50%" isRequired>
                   <Controller
                     name="birthMonth"
                     control={control}
@@ -328,7 +324,7 @@ function Form() {
                     )}
                   />
                 </FormControl>
-                <FormControl w="50%" isInvalid={errors.birthDate} isRequired>
+                <FormControl w="50%" isRequired>
                   <Controller
                     name="birthDate"
                     control={control}
@@ -351,7 +347,7 @@ function Form() {
               </HStack>
               {/* 性別 */}
               <HStack w="100%" spacing="4" alignItems="flex-start">
-                <FormControl w="100%" isInvalid={errors.gender} isRequired>
+                <FormControl w="100%" isRequired>
                   <FormLabel htmlFor="gender" fontWeight="bold">
                     性別
                   </FormLabel>
@@ -390,7 +386,7 @@ function Form() {
               </HStack>
               {/* 好きな食べ物 / food */}
               <HStack w="100%" spacing="4" alignItems="flex-start">
-                <FormControl isInvalid={errors.food} isRequired>
+                <FormControl isRequired>
                   <FormLabel fontWeight="bold">好きな食べ物</FormLabel>
                   <CheckboxGroup colorScheme="teal" defaultValue={[]}>
                     <HStack spacing={8}>
