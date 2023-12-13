@@ -1,8 +1,7 @@
 import React, { useState } from "react";
 import { Box, Text, Button, VStack, Center } from "@chakra-ui/react";
 
-function Confirm({ formData, onBack, onReset, onSubmit }) {
-
+export default function Confirm({ formData, onBack, onReset, onSubmit }) {
   // ページ遷移のstate管理
   const [isComplete, setIsComplete] = useState(false);
 
@@ -17,7 +16,9 @@ function Confirm({ formData, onBack, onReset, onSubmit }) {
         {isComplete ? (
           // 送信完了（onCompleteがtrue）
           <VStack>
-            <Text fontWeight="bold" fontSize="xl">完了しました！お疲れさまです！</Text>
+            <Text fontWeight="bold" fontSize="xl">
+              完了しました！お疲れさまです！
+            </Text>
             <Button colorScheme="teal" onClick={onReset} mt={20}>
               戻る
             </Button>
@@ -25,7 +26,9 @@ function Confirm({ formData, onBack, onReset, onSubmit }) {
         ) : (
           // 確認画面（onCompleteがfalse）
           <VStack spacing="4">
-            <Text fontWeight="bold" fontSize="xl">確認ページ</Text>
+            <Text fontWeight="bold" fontSize="xl">
+              確認ページ
+            </Text>
             {/* フォームから受け取ったデータを表示 */}
             <VStack align="start" spacing="2">
               <Text>{`姓: ${formData.lastName}`}</Text>
@@ -61,5 +64,3 @@ function Confirm({ formData, onBack, onReset, onSubmit }) {
     </Center>
   );
 }
-
-export default Confirm;

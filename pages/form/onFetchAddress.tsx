@@ -2,6 +2,9 @@
  * zipcloudから住所情報を取得する
  */
 export const onFetchAddress = (getValues, setAddress, setValue) => {
+
+  console.log(getValues());
+
   const zipcloudURL = "https://zipcloud.ibsnet.co.jp/api/search?zipcode=";
 
   // ポストコードを取得

@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
+import Layout from "../layouts/layout";
 import {
   Box,
   HStack,
@@ -17,63 +18,75 @@ import {
 } from "@chakra-ui/react";
 import { useForm, Controller, SubmitHandler } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-import Layout from "../layouts/layout";
 import { ErrorMessage } from "@hookform/error-message";
 import { schema } from "./schema";
 import { onFetchAddress } from "./onFetchAddress";
 import { Inputs } from "./type";
-import {
-  selectBirthDate,
-  selectBirthMonth,
-  selectBirthYear,
-} from "./selectBirth";
-import ConfirmPage from "./confirm.page";
+import { selectBirth } from "./selectBirth";
+import Confirm from "./confirm.page";
 
-function Form() {
+export default function Form() {
+  /**
+   * ReactHookForm
+   */
   const {
-    control,
-    handleSubmit,
-    reset,
-    formState: { errors },
-    getValues,
-    setValue,
+    control, // 各フォームフィールドの状態を管理
+    handleSubmit, // フォームの送信ロジックを渡す関数
+    reset, //  フォームをリセット
+    formState: { errors }, // フォームの状態管理、errorsプロパティにエラーが入る
+    getValues, // 各フィールドの値を取得
+    setValue, // フィールドに値を設定
   } = useForm({
     resolver: yupResolver(schema),
   });
 
-  // ページ遷移のstate管理
+  /**
+   * 画面遷移
+   */
+  // 確認画面遷移のstate管理（true：確認画面、false：入力画面）
   const [isConfirm, setIsConfirm] = useState(false);
 
-  // 戻るボタンが押されたときに確認ページから元のフォームに戻る
+  // 確認画面から入力画面に戻る
   const handleBack = () => {
     setIsConfirm(false);
   };
 
-  // 完了画面で戻るボタンが押されたとき、未入力のフォームに戻る
+  // 完了画面から入力画面に戻る（フォームはリセットされた状態）
   const handleReset = () => {
     setIsConfirm(false);
-    reset();
+    reset(); // リセット
   };
 
-  // API通信で取得した住所のstate管理
+  /** --------------------------------------------------------------
+   * ⭐️ handleBackとhandleResetはほぼやっていること一緒だからまとめられそう
+   * 画面ごとにフラグを立てて、分岐？
+   -------------------------------------------------------------- */
+
+  /**
+   * API通信
+   */
+  // 取得した住所のstate管理
   const [address, setAddress] = useState(null);
 
-  // API通信ハンドラ
+  // API処理の子コンポーネントに渡す
   const handleFetchAddress = () => {
     onFetchAddress(getValues, setAddress, setValue);
   };
 
+  /**
+   * 入力データ送信
+   */
   const onSubmit: SubmitHandler<Inputs> = (data) => {
     if (Object.keys(errors).length !== 0) {
-      console.log("=============== エラーがあります =============== ");
+      console.log("=============== エラー！ =============== ");
       console.log("エラー:", errors);
       return;
     }
 
     console.log("=============== 成功！ =============== ");
-    console.log("フォームデータ:", data);
+    console.log("入力内容:", data);
 
-    // 問題なければ、確認ページに遷移
+    // 問題なければ、確認画面に遷移
     setIsConfirm(true);
   };
 
@@ -82,8 +95,8 @@ function Form() {
       <Center>
         <Box w="100%" maxW="500px">
           {isConfirm ? (
-            // 確認ページを表示
-            <ConfirmPage
+            // 確認画面を表示
+            <Confirm
               formData={getValues()}
               onBack={handleBack}
               onReset={handleReset}
@@ -92,9 +105,8 @@ function Form() {
           ) : (
             // フォーム
             <VStack spacing="4">
-              {/* Name */}
               <HStack w="100%" spacing="4" alignItems="flex-start">
-                {/* 姓 / lastName */}
+                {/* 姓_lastName */}
                 <FormControl w="50%" isRequired>
                   <FormLabel htmlFor="lastName" fontWeight="bold">
                     姓
@@ -114,7 +126,7 @@ function Form() {
                     )}
                   />
                 </FormControl>
-                {/* 名 / firstName */}
+                {/* 名_firstName */}
                 <FormControl w="50%" isRequired>
                   <FormLabel htmlFor="firstName" fontWeight="bold">
                     名
@@ -137,7 +149,7 @@ function Form() {
               </HStack>
               {/* Name（カナ） */}
               <HStack w="100%" spacing="4" alignItems="flex-start">
-                {/* セイ / lastNameKana */}
+                {/* セイ_lastNameKana */}
                 <FormControl w="50%" isRequired>
                   <FormLabel htmlFor="lastNameKana" fontWeight="bold">
                     セイ
@@ -157,7 +169,7 @@ function Form() {
                     )}
                   />
                 </FormControl>
-                {/* メイ / firstNameKana */}
+                {/* メイ_firstNameKana */}
                 <FormControl w="50%" isRequired>
                   <FormLabel htmlFor="firstNameKana" fontWeight="bold">
                     メイ
@@ -178,7 +190,7 @@ function Form() {
                   />
                 </FormControl>
               </HStack>
-              {/* メールアドレス / email */}
+              {/* メールアドレス_email */}
               <FormControl isRequired>
                 <FormLabel htmlFor="email" fontWeight="bold">
                   メールアドレス
@@ -198,7 +210,7 @@ function Form() {
                   )}
                 />
               </FormControl>
-              {/* 郵便番号 / postcode */}
+              {/* 郵便番号_postcode */}
               <FormControl isRequired>
                 <FormLabel htmlFor="postcode" fontWeight="bold">
                   郵便番号
@@ -216,7 +228,7 @@ function Form() {
               </FormControl>
               {/* 取得した住所情報を表示 */}
               <HStack w="100%" spacing="4" alignItems="flex-start">
-                {/* 都道府県 / prefectures */}
+                {/* 都道府県_prefectures */}
                 <FormControl w="50%" isRequired>
                   <FormLabel htmlFor="prefectures" fontWeight="bold">
                     都道府県
@@ -238,7 +250,7 @@ function Form() {
                 </FormControl>
               </HStack>
               <HStack w="100%" spacing="4" alignItems="flex-start">
-                {/* 市区町村 / city */}
+                {/* 市区町村_city */}
                 <FormControl w="50%" isRequired>
                   <FormLabel htmlFor="city" fontWeight="bold">
                     市区町村
@@ -258,7 +270,7 @@ function Form() {
                     )}
                   />
                 </FormControl>
-                {/* 町名 / town */}
+                {/* 町名_town */}
                 <FormControl w="50%" isRequired>
                   <FormLabel htmlFor="town" fontWeight="bold">
                     町名
@@ -290,7 +302,7 @@ function Form() {
                     control={control}
                     render={({ field }) => (
                       <Select {...field} placeholder="-">
-                        {selectBirthYear()}
+                        {selectBirth("year")}
                       </Select>
                     )}
                   />
@@ -310,7 +322,7 @@ function Form() {
                     control={control}
                     render={({ field }) => (
                       <Select {...field} placeholder="-">
-                        {selectBirthMonth()}
+                        {selectBirth("month", 12)}
                       </Select>
                     )}
                   />
@@ -330,7 +342,7 @@ function Form() {
                     control={control}
                     render={({ field }) => (
                       <Select {...field} placeholder="-">
-                        {selectBirthDate()}
+                        {selectBirth("date", 31)}
                       </Select>
                     )}
                   />
@@ -345,7 +357,7 @@ function Form() {
                   />
                 </FormControl>
               </HStack>
-              {/* 性別 */}
+              {/* 性別_gender */}
               <HStack w="100%" spacing="4" alignItems="flex-start">
                 <FormControl w="100%" isRequired>
                   <FormLabel htmlFor="gender" fontWeight="bold">
@@ -384,7 +396,7 @@ function Form() {
                   />
                 </FormControl>
               </HStack>
-              {/* 好きな食べ物 / food */}
+              {/* 好きな食べ物_food */}
               <HStack w="100%" spacing="4" alignItems="flex-start">
                 <FormControl isRequired>
                   <FormLabel fontWeight="bold">好きな食べ物</FormLabel>
@@ -442,5 +454,3 @@ function Form() {
     </Layout>
   );
 }
-
-export default Form;
