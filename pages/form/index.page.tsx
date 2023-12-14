@@ -19,11 +19,11 @@ import {
 import { useForm, Controller, SubmitHandler } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { ErrorMessage } from "@hookform/error-message";
-import { schema } from "./schema";
-import { onFetchAddress } from "./onFetchAddress";
-import { Inputs } from "./type";
-import { selectBirth } from "./selectBirth";
-import Confirm from "./confirm.page";
+import { schema } from "./components/schema";
+import { onFetchAddress } from "./components/onFetchAddress";
+import { Inputs } from "./components/type";
+import { selectBirth } from "./components/selectBirth";
+import Confirm from "./components/confirm";
 
 export default function Form() {
   /**
