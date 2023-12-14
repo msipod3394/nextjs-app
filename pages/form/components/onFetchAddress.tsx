@@ -2,8 +2,7 @@
  * zipcloudから住所情報を取得する
  */
 export const onFetchAddress = (getValues, setAddress, setValue) => {
-
-  console.log(getValues());
+  // console.log(getValues());
 
   const zipcloudURL = "https://zipcloud.ibsnet.co.jp/api/search?zipcode=";
 
@@ -26,7 +25,7 @@ export const onFetchAddress = (getValues, setAddress, setValue) => {
   fetch(url)
     .then((response) => response.json())
     .then((data) => {
-      console.log("取得した情報:", data.results);
+      console.log("取得した住所:", data.results);
 
       // 取得した住所を設定
       setAddress(data.results);
@@ -36,7 +35,8 @@ export const onFetchAddress = (getValues, setAddress, setValue) => {
       setValue("city", data.results[0].address2);
       setValue("town", data.results[0].address3);
     })
+    // エラーの場合
     .catch((error) => {
-      console.error("Error fetching address information:", error);
+      console.error("エラーがあります！:", error);
     });
 };

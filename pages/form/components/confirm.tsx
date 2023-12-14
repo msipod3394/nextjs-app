@@ -27,7 +27,7 @@ export default function Confirm({ formData, onBack, onReset, onSubmit }) {
           // 確認画面（onCompleteがfalse）
           <VStack spacing="4">
             <Text fontWeight="bold" fontSize="xl">
-              確認ページ
+              確認
             </Text>
             {/* フォームから受け取ったデータを表示 */}
             <VStack align="start" spacing="2">
