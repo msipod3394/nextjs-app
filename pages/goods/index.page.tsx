@@ -3,6 +3,8 @@ import React, { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import { GoodsCard } from "./card";
 import Layout from "../../layouts/layout";
+import useSWR from "swr";
+import { fetchBooks } from "./request";
 
 /**
  * 商品データの定義
@@ -45,34 +47,14 @@ export default function Goods() {
   // 1ページの表示件数
   const itemsPerPage = 4;
 
+  const { data, error, isLoading } = useSWR(url, fetchBooks);
+
   /**
    * データ通信
    */
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await fetch(url);
-        if (!response.ok) {
-          throw new Error("ネットワークエラーです");
-        }
-        const data = await response.json();
-        setBooks(data.items || []); // 取得したデータをbooksに格納
-      } catch (error) {
-        console.error(error);
-      } finally {
-        setLoading(false); // 通信完了、state変更
-      }
-    };
-    fetchData();
-  }, []);
-
-  /**
-   * 降順・昇順機能
-   * [フック] 読込完了時、昇降順の変更
-   */
-  useEffect(() => {
-    if (!loading) {
-      const sortedData = [...books].sort((a, b) => {
+    if (!isLoading) {
+      const sortedData = [...data].sort((a, b) => {
         const order = ascendingOrder ? 1 : -1;
         return a.volumeInfo.publishedDate > b.volumeInfo.publishedDate
           ? order
@@ -81,23 +63,15 @@ export default function Goods() {
       setBooks(sortedData);
       setCurrentPage(1); // 1ページ目に戻る
     }
-  }, [loading, ascendingOrder]);
+  }, [isLoading, ascendingOrder, data]);
 
-  /**
-   * ページング機能
-   */
-  const totalPages = Math.ceil(books.length / itemsPerPage);
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const endIndex = startIndex + itemsPerPage;
-  const displayedBooks = books.slice(startIndex, endIndex);
-
-  const handleNextPage = () => {
-    setCurrentPage((prevPage) => Math.min(prevPage + 1, totalPages));
-  };
-
-  const handlePrevPage = () => {
-    setCurrentPage((prevPage) => Math.max(prevPage - 1, 1));
-  };
+  if (isLoading) {
+    return (
+      <Layout>
+        <Text align="center">読み込み中</Text>
+      </Layout>
+    );
+  }
 
   const toggleSortOrder = () => {
     setAscendingOrder((prevSetOrder) => !prevSetOrder);
@@ -105,47 +79,29 @@ export default function Goods() {
 
   return (
     <Layout>
-      {loading ? (
-        <Text align="center">読み込み中</Text>
-      ) : (
-        <Box w="full">
-          <Center>
-            <Button
-              onClick={toggleSortOrder}
-              colorScheme="blue"
-              variant="outline"
-            >
-              {ascendingOrder ? "昇順に並び替える" : "降順に並び替える"}
-            </Button>
-          </Center>
-          <Flex w="full" p="4" marginY="20px" gap="8" wrap="wrap" justifyContent="center">
-            {displayedBooks.map((item) => (
-              <GoodsCard key={item.id} item={item} />
-            ))}
-          </Flex>
-          <Center>
-            <Button
-              onClick={handlePrevPage}
-              colorScheme="blue"
-              variant="outline"
-              disabled={currentPage === 1}
-            >
-              前のページ
-            </Button>
-            <Text mx="4">
-              ページ {currentPage} / {totalPages}
-            </Text>
-            <Button
-              onClick={handleNextPage}
-              colorScheme="blue"
-              variant="outline"
-              disabled={currentPage === totalPages}
-            >
-              次のページ
-            </Button>
-          </Center>
-        </Box>
-      )}
+      <Box w="full">
+        <Center>
+          <Button
+            onClick={toggleSortOrder}
+            colorScheme="blue"
+            variant="outline"
+          >
+            {ascendingOrder ? "昇順に並び替える" : "降順に並び替える"}
+          </Button>
+        </Center>
+        <Flex
+          w="full"
+          p="4"
+          marginY="20px"
+          gap="8"
+          wrap="wrap"
+          justifyContent="center"
+        >
+          {books.map((item) => (
+            <GoodsCard key={item.id} item={item} />
+          ))}
+        </Flex>
+      </Box>
     </Layout>
   );
 }

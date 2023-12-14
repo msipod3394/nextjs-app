@@ -40,7 +40,7 @@ export const GoodsCard: FC<Props> = ({
           </Flex>
         </CardBody>
         <CardFooter justifyContent="center" p="4">
-          <Link key={id} href={`goods/detail?${id}`} passHref>
+          <Link key={id} href={`goods/detail/${id}`} passHref>
             <Button as="a" colorScheme="gray">
               詳しくみる
             </Button>

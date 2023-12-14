@@ -1,5 +1,5 @@
 import { Text } from "@chakra-ui/react";
-import Layout from "./layouts/layout";
+import Layout from "../layouts/layout";
 
 export default function Home() {
   return (
