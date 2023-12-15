@@ -23,7 +23,7 @@ export default function Todo() {
 
     const newTodos = [...incompleteTodos, todoText];
     setIncompleteTodos(newTodos);
-    setTodoText("");
+    // setTodoText();
   };
 
   // input内のテキストを更新
