@@ -32,7 +32,7 @@ export default function GoodsDetail() {
    * idに一致したアイテムの情報を再取得
    */
   // 取得した情報を管理
-  const [book, setBook] = useState<Props | null>(null);
+  const [book, setBook] = useState(null);
 
   // bookに取得した情報が入ったかを管理
   const [isProcessing, setIsProcessing] = useState(false);
@@ -57,11 +57,7 @@ export default function GoodsDetail() {
         <Text align="center">読み込み中</Text>
       ) : error ? (
         <Text align="center">エラー: {error.message}</Text>
-      ) : isProcessing ? (
-        /**
-         * ⭐️ isLoading が true になるタイミングだと、bookの中がnullでエラーになった。
-         * useStateで状態管理を追加したが、いいやり方はないか？
-         */
+      ) : (
         <Container>
           <Stack mb="8" align="center">
             <Heading mb="4">{book?.volumeInfo.title}</Heading>
@@ -95,8 +91,6 @@ export default function GoodsDetail() {
             </Link>
           </Stack>
         </Container>
-      ) : (
-        ""
       )}
     </Layout>
   );
