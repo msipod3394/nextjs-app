@@ -5,6 +5,7 @@ export const selectBirth = (type, length = 31) => {
   return Array.from({ length: length }, (_, index) => {
     const value =
       type === "year" ? new Date().getFullYear() - index : index + 1;
+    
     return (
       <option key={value} value={value}>
         {value}

@@ -16,9 +16,11 @@ import {
   CheckboxGroup,
   Checkbox,
 } from "@chakra-ui/react";
+// React Hook Form
 import { useForm, Controller, SubmitHandler } from "react-hook-form";
-import { yupResolver } from "@hookform/resolvers/yup";
 import { ErrorMessage } from "@hookform/error-message";
+import { yupResolver } from "@hookform/resolvers/yup";
+// components
 import { schema } from "./components/schema";
 import { onFetchAddress } from "./components/onFetchAddress";
 import { Inputs } from "./components/type";
@@ -36,6 +38,7 @@ export default function Form() {
     formState: { errors }, // フォームの状態管理、errorsプロパティにエラーが入る
     getValues, // 各フィールドの値を取得
     setValue, // フィールドに値を設定
+    register, // 各フィールドを登録
   } = useForm({
     resolver: yupResolver(schema),
   });
@@ -66,11 +69,18 @@ export default function Form() {
    * API通信
    */
   // 取得した住所のstate管理
+
   const [address, setAddress] = useState(null);
 
   // API処理の子コンポーネントに渡す
   const handleFetchAddress = () => {
-    onFetchAddress(getValues, setAddress, setValue);
+    const postcode = getValues("postcode");
+
+    // const { pref, city, town } = onFetchAddress(postcode, setAddress, setValue);
+    onFetchAddress(postcode, setAddress, setValue);
+    // setValue("prefectures", pref);
+    // setValue("city", city);
+    // setValue("town", town);
   };
 
   /**
@@ -116,6 +126,7 @@ export default function Form() {
                     control={control}
                     render={({ field }) => <Input {...field} />}
                   />
+                  {/* <Input name="lastName" {...register("lastName")} /> */}
                   <ErrorMessage
                     errors={errors}
                     name="lastName"
@@ -400,12 +411,15 @@ export default function Form() {
               <HStack w="100%" spacing="4" alignItems="flex-start">
                 <FormControl isRequired>
                   <FormLabel fontWeight="bold">好きな食べ物</FormLabel>
-                  <CheckboxGroup colorScheme="teal" defaultValue={[]}>
+                  <CheckboxGroup
+                    colorScheme="teal"
+                    defaultValue={getValues("food")}
+                  >
                     <HStack spacing={8}>
                       <Checkbox
                         value="sushi"
                         onChange={(e) =>
-                          setValue("food", e.target.checked ? ["寿司"] : [])
+                          setValue("food", e.target.checked ? ["sushi"] : [])
                         }
                       >
                         寿司🍣
@@ -413,15 +427,15 @@ export default function Form() {
                       <Checkbox
                         value="ramen"
                         onChange={(e) =>
-                          setValue("food", e.target.checked ? ["ラーメン"] : [])
+                          setValue("food", e.target.checked ? ["ramen"] : [])
                         }
                       >
                         ラーメン🍜
                       </Checkbox>
                       <Checkbox
-                        value="焼肉"
+                        value="yakinik"
                         onChange={(e) =>
-                          setValue("food", e.target.checked ? ["焼肉"] : [])
+                          setValue("food", e.target.checked ? ["yakinik"] : [])
                         }
                       >
                         焼肉🍖

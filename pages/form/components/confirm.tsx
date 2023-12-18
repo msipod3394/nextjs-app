@@ -1,7 +1,16 @@
 import React, { useState } from "react";
 import { Box, Text, Button, VStack, Center } from "@chakra-ui/react";
 
-export default function Confirm({ formData, onBack, onReset, onSubmit }) {
+
+type Props = {
+  formData: any;
+  onBack: () => void;
+  onReset: (canRest: boolean) => void;
+  onSubmit: () => void;
+};
+
+
+export default function Confirm({ formData, onBack, onReset, onSubmit }:Props) {
   // ページ遷移のstate管理
   const [isComplete, setIsComplete] = useState(false);
 
@@ -19,7 +28,7 @@ export default function Confirm({ formData, onBack, onReset, onSubmit }) {
             <Text fontWeight="bold" fontSize="xl">
               完了しました！お疲れさまです！
             </Text>
-            <Button colorScheme="teal" onClick={onReset} mt={20}>
+            <Button colorScheme="teal" onClick={()=>{onReset(false)}} mt={20}>
               戻る
             </Button>
           </VStack>
