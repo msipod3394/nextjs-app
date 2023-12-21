@@ -1,6 +1,13 @@
-import { Flex, Text, Link } from "@chakra-ui/react";
+import { Flex, Text, Link as ChakraLink } from "@chakra-ui/react";
+import { useCartContext } from "../../pages/ec/components/CartContext";
+import { useRouter } from "next/router";
+import NextLink from "next/link";
 
 export const Header = () => {
+  const router = useRouter();
+  const { orderId } = router.query;
+  const { itemCount } = useCartContext();
+
   return (
     <Flex
       as="header"
@@ -11,15 +18,26 @@ export const Header = () => {
       color="white"
       h="100%"
     >
-      <Text fontSize="md" fontWeight="bold">
-        <Link href="/">Home</Link>
-      </Text>
       <Flex>
-        <Text fontSize="md" fontWeight="bold" ml="4">
-          <Link href="/goods">Goods</Link>
+        <Text fontSize="md" fontWeight="bold">
+          <ChakraLink href="/">Home</ChakraLink>
         </Text>
         <Text fontSize="md" fontWeight="bold" ml="4">
-          <Link href="/form">ProfileForm</Link>
+          <ChakraLink href="/goods">Goods</ChakraLink>
+        </Text>
+        <Text fontSize="md" fontWeight="bold" ml="4">
+          <ChakraLink href="/form">ProfileForm</ChakraLink>
+        </Text>
+        <Text fontSize="md" fontWeight="bold" ml="4">
+          <NextLink href="{`/ec/`}">EC</NextLink>
+        </Text>
+      </Flex>
+      <Flex>
+        <Text fontSize="md" fontWeight="bold" ml="4">
+          カート: {itemCount}
+        </Text>
+        <Text fontSize="md" fontWeight="bold" ml="4">
+          <NextLink href={`/ec/confirm/`}>購入する</NextLink>
         </Text>
       </Flex>
     </Flex>

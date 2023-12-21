@@ -1,10 +1,11 @@
-import React, { useState, useEffect, use } from "react";
+import React, { useState, useEffect, use, useContext } from "react";
 import Layout from "../../layouts/layout";
 import { Box, Button, Flex, Input, VStack } from "@chakra-ui/react";
 import useSWR from "swr";
 import { fetchData } from "./components/request";
 import { CardListItem } from "./components/card";
 // import useSWRMutation from "swr/mutation";
+// import { CartContext } from "../_app.page";
 
 // 取得したJSONデータの型定義
 export type getData = {
@@ -16,6 +17,9 @@ export type getData = {
     imageLinks: {
       thumbnail: string;
     };
+  };
+  saleInfo: {
+    buyLink: string;
   };
 };
 
@@ -43,6 +47,11 @@ export default function EC() {
 
   // SWR設定
   const { data, error, isLoading, isValidating } = useSWR(url, fetchData);
+
+  // useContextの呼び出し
+  // const cartProvider = useContext(CartContext);
+  // console.log(cartProvider);
+  // console.log(cartProvider['cart'].length);
 
   /**
    * データ通信

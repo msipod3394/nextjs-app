@@ -41,7 +41,7 @@ export const CardListItem: FC<Props> = ({ item: { id, volumeInfo } }) => {
           </Flex>
         </CardBody>
         <CardFooter justifyContent="center" p="4">
-          <Link key={id} href={`goods/detail/${id}`} passHref>
+          <Link key={id} href={`./ec/detail/${id}`} passHref>
             <Button as="a" colorScheme="gray">
               詳しくみる
             </Button>

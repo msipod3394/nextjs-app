@@ -1,11 +1,16 @@
-import { ChakraProvider } from "@chakra-ui/react";
+import { ChakraProvider } from '@chakra-ui/react';
+import { AppProps } from 'next/app';
+import { CartContextProvider, useCartContext } from './ec/components/CartContext';
 
-export default function App({ Component, pageProps }) {
+const App = ({ Component, pageProps }: AppProps) => {
+
   return (
-    // <CartProcider>
     <ChakraProvider>
-      <Component {...pageProps} />
+      <CartContextProvider>
+        <Component {...pageProps} />
+      </CartContextProvider>
     </ChakraProvider>
-    // </CartProcider>
   );
-}
+};
+
+export default App;
