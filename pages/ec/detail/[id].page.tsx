@@ -1,4 +1,11 @@
-import { Button, Container, Heading, Stack, Text } from "@chakra-ui/react";
+import {
+  Button,
+  Container,
+  Flex,
+  Heading,
+  Stack,
+  Text,
+} from "@chakra-ui/react";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import Image from "next/image";
@@ -8,6 +15,7 @@ import useSWR from "swr";
 import { fetchData } from "../components/request";
 import { getData } from "../index.page";
 import { useCartContext } from "../components/CartContext";
+import NextLink from "next/link";
 
 type Props = {
   item: getData;
@@ -71,10 +79,17 @@ export default function ECDetail() {
             <Text>出版日: {item?.volumeInfo.publishedDate}</Text>
             <Text>商品詳細: {item?.volumeInfo.description}</Text>
           </Stack>
-          <Stack mb="4" align="center" spacing="50px">
-            <Button onClick={handleAddCart} width="30%" colorScheme="blue">
-              カートに入れる
-            </Button>
+          <Stack mb="4" align="center" spacing="10">
+            <Flex align="center">
+              <Button onClick={handleAddCart} colorScheme="blue" mr="4">
+                カートに入れる
+              </Button>
+              <NextLink href={`/ec/confirm/`}>
+                <Button colorScheme="blue">
+                  購入する
+                </Button>
+              </NextLink>
+            </Flex>
             <Link href="/ec" passHref>
               <Button as="a" colorScheme="gray">
                 一覧に戻る

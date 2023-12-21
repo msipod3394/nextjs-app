@@ -29,7 +29,7 @@ export const Header = () => {
           <ChakraLink href="/form">ProfileForm</ChakraLink>
         </Text>
         <Text fontSize="md" fontWeight="bold" ml="4">
-          <NextLink href="{`/ec/`}">EC</NextLink>
+          <NextLink href={`/ec/`}>EC</NextLink>
         </Text>
       </Flex>
       <Flex>
