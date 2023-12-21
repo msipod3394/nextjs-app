@@ -28,7 +28,7 @@ export const CardListItem: FC<Props> = ({ item: { id, volumeInfo } }) => {
               <Image
                 alt={volumeInfo.title}
                 src={
-                  volumeInfo.imageLinks.thumbnail
+                  volumeInfo.imageLinks?.thumbnail
                     ? volumeInfo.imageLinks.thumbnail
                     : "noimage.jpg"
                 }

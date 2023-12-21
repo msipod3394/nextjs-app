@@ -1,11 +1,10 @@
 import React, { useState, useEffect, use, useContext } from "react";
-import Layout from "../../layouts/layout";
 import { Box, Button, Flex, Input, VStack } from "@chakra-ui/react";
 import useSWR from "swr";
+import Layout from "../../layouts/layout";
 import { fetchData } from "./components/request";
 import { CardListItem } from "./components/card";
 // import useSWRMutation from "swr/mutation";
-// import { CartContext } from "../_app.page";
 
 // 取得したJSONデータの型定義
 export type getData = {
@@ -30,17 +29,17 @@ export default function EC() {
   // API取得データ管理
   const [fetchedData, setFetchedData] = useState([]);
 
-  // 件数管理（初期表示5件）
+  // 表示件数管理
   const initVisibleItems = 10;
   const [visibleItems, setVisibleItems] = useState(initVisibleItems);
+
+  // 検索キーワード
+  const [searchKeyword, setSearchKeyword] = useState("");
 
   // もっと見る
   const handleVisibleMore = () => {
     setVisibleItems((prevVisibleItems) => prevVisibleItems + initVisibleItems);
   };
-
-  // キーワード窓
-  const [searchKeyword, setSearchKeyword] = useState("");
 
   // 書籍データURL
   const url = `https://www.googleapis.com/books/v1/volumes?q=${searchKeyword}`;
@@ -53,14 +52,13 @@ export default function EC() {
   // console.log(cartProvider);
   // console.log(cartProvider['cart'].length);
 
-  /**
-   * データ通信
-   */
+  // 検索機能（APIからデータを取得）
   const handleSearchKeyword = () => {
     console.log(`検索キーワード：${searchKeyword}`);
     setSearchKeyword(searchKeyword);
   };
 
+  // データ再取得が完了したら、fetchedDataにセット
   useEffect(() => {
     if (!isValidating && data) {
       setFetchedData(data);

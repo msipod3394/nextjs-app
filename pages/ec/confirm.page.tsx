@@ -21,8 +21,7 @@ type Props = {
 
 export default function ECConfirm() {
   const { cartItems } = useCartContext();
-
-  console.log(cartItems);
+  // console.log(cartItems);
 
   return (
     <Layout>

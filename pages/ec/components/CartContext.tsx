@@ -31,14 +31,15 @@ const CartContext = createContext<CartContextValue | undefined>(undefined);
  * - _appを通ったページで使えるように
  */
 export const CartContextProvider = ({ children }) => {
+  // カート内のアイテム数管理
   const [itemCount, setItemCount] = useState(0);
+  // カート内のアイテム管理
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
 
   // カートにアイテムを追加
   const addToCart = (item: CartItem) => {
     // IDの重複チェック
     const isItemExist = cartItems.some((cartItem) => cartItem.id === item.id);
-
     if (!isItemExist) {
       setItemCount((prevCount) => prevCount + 1);
       setCartItems((prevItems) => [...prevItems, item]);
@@ -47,6 +48,7 @@ export const CartContextProvider = ({ children }) => {
     }
   };
 
+  // useCartContext実行後に呼び出せる
   const contextValue = {
     itemCount,
     cartItems,
@@ -60,11 +62,12 @@ export const CartContextProvider = ({ children }) => {
   );
 };
 
+// カート情報にアクセス
 export const useCartContext = () => {
-  const context = useContext(CartContext);
+  const cartData = useContext(CartContext);
 
-  if (!context) {
+  if (!cartData) {
     console.log("エラー");
   }
-  return context;
+  return cartData;
 };
